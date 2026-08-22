@@ -1,5 +1,6 @@
 package com.dlovid.short
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
@@ -33,7 +34,8 @@ class BonusActivity : AppCompatActivity() {
     }
 
     private fun startVipPayment() {
-        val transactionRequest = TransactionRequest("ORDER-${System.currentTimeMillis()}", 15000.0)
+        val orderId = "ORDER-${System.currentTimeMillis()}"
+        val transactionRequest = TransactionRequest(orderId, 15000.0)
         transactionRequest.customerDetails = CustomerDetails().apply {
             customerIdentifier = "user-dlovid"
         }
@@ -44,7 +46,7 @@ class BonusActivity : AppCompatActivity() {
         MidtransSDK.getInstance().startPaymentUiFlow(this)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Bundle?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == RESULT_OK) {
             VipManager.setVipAfterPayment()
