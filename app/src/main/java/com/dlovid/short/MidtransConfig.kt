@@ -1,4 +1,4 @@
-package com.dlovids.app
+package com.dlovid.short
 
 object MidtransConfig {
     // CLIENT KEY - Aman buat di APK
