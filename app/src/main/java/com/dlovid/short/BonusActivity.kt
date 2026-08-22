@@ -1,52 +1,54 @@
 package com.dlovid.short
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.ImageView
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.midtrans.sdk.corekit.core.MidtransSDK
+import com.midtrans.sdk.corekit.core.TransactionRequest
+import com.midtrans.sdk.corekit.models.CustomerDetails
+import com.midtrans.sdk.corekit.models.ItemDetails
 
 class BonusActivity : AppCompatActivity() {
-
-    private lateinit var aiBicara: AiBicaraD5
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // D5 full robot
-        setContentView(R.layout.layout_bonus_d5)
+        setContentView(R.layout.activity_bonus)
 
-        aiBicara = AiBicaraD5(this)
-        aiBicara.mulaiBicara("Selamat datang di menu bonus bos!")
+        // AI Bicara D5
+        val aiD5 = AiBicaraD5(this)
+        aiD5.speakBonusIntro()
 
-        // ============ E2 - PINDAH MENU ============
-        val btnHome = findViewById<ImageView>(R.id.btnMenuHome)
-        val btnShort = findViewById<ImageView>(R.id.btnMenuShort)
-        val btnBonus = findViewById<ImageView>(R.id.btnMenuBonus)
-        val btnProfile = findViewById<ImageView>(R.id.btnMenuProfile)
-
-        btnHome.setOnClickListener {
-            aiBicara.mulaiBicara("Pindah ke Home")
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+        // Tombol VIP 15K QRIS
+        val btnVip = findViewById<Button>(R.id.btnVip)
+        btnVip.setOnClickListener {
+            startVipPayment()
         }
 
-        btnShort.setOnClickListener {
-            aiBicara.mulaiBicara("Pindah ke Short")
-            // ganti ShortActivity kalau nama activity short kamu beda
-            startActivity(Intent(this, MainActivity::class.java))
-        }
-
-        btnBonus.setOnClickListener {
-            aiBicara.mulaiBicara("Kamu sudah di menu bonus bos")
-        }
-
-        btnProfile.setOnClickListener {
-            aiBicara.mulaiBicara("Pindah ke Profile")
-            // startActivity(Intent(this, ProfileActivity::class.java))
+        // Check VIP
+        VipManager.checkVipStatus { isVip, until ->
+            if(isVip) {
+                Toast.makeText(this, "Kamu VIP sampai $until", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
-    override fun onDestroy() {
-        aiBicara.stopBicara()
-        super.onDestroy()
+    private fun startVipPayment() {
+        val transactionRequest = TransactionRequest("ORDER-${System.currentTimeMillis()}", 15000.0)
+        transactionRequest.customerDetails = CustomerDetails().apply {
+            customerIdentifier = "user-dlovid"
+        }
+        transactionRequest.itemDetails = arrayListOf(
+            ItemDetails("VIP-1", 15000.0, 1, "VIP 30 Hari DLOVID")
+        )
+        MidtransSDK.getInstance().transactionRequest = transactionRequest
+        MidtransSDK.getInstance().startPaymentUiFlow(this)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Bundle?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == RESULT_OK) {
+            VipManager.setVipAfterPayment()
+            Toast.makeText(this, "VIP Aktif! Bonus D5 terbuka 50 dukungan!", Toast.LENGTH_LONG).show()
+        }
     }
 }
