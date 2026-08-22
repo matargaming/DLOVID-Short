@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content">
+
+ <com.google.android.gms.ads.AdView
+ xmlns:ads="http://schemas.android.com/apk/res-auto"
+ android:id="@+id/adViewNonVip"
+ android:layout_width="match_parent"
+ android:layout_height="50dp"
+ ads:adSize="BANNER"
+ ads:adUnitId="ca-app-pub-2302268615291501/9752539921"/>
+
+ <TextView
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Iklan - Non VIP"
+ android:textSize="10sp"
+ android:layout_gravity="top|end"
+ android:background="#80000000"
+ android:textColor="#FFFFFF"
+ android:padding="3dp"/>
+
+</FrameLayout>
