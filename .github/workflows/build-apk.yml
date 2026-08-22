@@ -1,8 +1,8 @@
-name: Build DLOVID APK Fixed
+name: Build DLOVID APK V3
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
   build:
@@ -16,25 +16,41 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           
+      - name: Setup Gradle 8.5
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.5
+          
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         
-      - name: Create Correct Android Structure
+      - name: Clean old files
         run: |
-          rm -rf app
+          rm -rf app build .gradle
+          rm -f build.gradle settings.gradle gradlew
           mkdir -p app/src/main/assets
           mkdir -p app/src/main/java/com/dlovids/short
-          
-          # Copy HTML
           cp index.html app/src/main/assets/index.html
           
-          # AndroidManifest
+          cat > settings.gradle << 'EOF'
+          include ':app'
+          EOF
+          
+          cat > build.gradle << 'EOF'
+          buildscript {
+              repositories { google(); mavenCentral() }
+              dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
+          }
+          allprojects { repositories { google(); mavenCentral() } }
+          task clean(type: Delete) { delete rootProject.buildDir }
+          EOF
+          
           cat > app/src/main/AndroidManifest.xml << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.dlovids.short">
               <uses-permission android:name="android.permission.INTERNET"/>
-              <application android:allowBackup="true" android:label="DLOVID-Short" android:theme="@android:style/Theme.NoTitleBar">
-                  <activity android:name=".MainActivity" android:exported="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+              <application android:allowBackup="true" android:label="DLOVID-Short" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                  <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN"/>
                           <category android:name="android.intent.category.LAUNCHER"/>
@@ -44,66 +60,47 @@ jobs:
           </manifest>
           EOF
           
-          # MainActivity
           cat > app/src/main/java/com/dlovids/short/MainActivity.java << 'EOF'
           package com.dlovids.short;
           import android.app.Activity;
           import android.os.Bundle;
-          import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
           public class MainActivity extends Activity {
-              private WebView webView;
-              @Override protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-                  webView = new WebView(this);
-                  setContentView(webView);
-                  WebSettings s = webView.getSettings();
-                  s.setJavaScriptEnabled(true);
-                  s.setDomStorageEnabled(true);
-                  webView.setWebViewClient(new WebViewClient());
-                  webView.loadUrl("file:///android_asset/index.html");
-              }
-              @Override public void onBackPressed() {
-                  if (webView.canGoBack()) webView.goBack(); else super.onBackPressed();
+              protected void onCreate(Bundle s) {
+                  super.onCreate(s);
+                  WebView w = new WebView(this);
+                  setContentView(w);
+                  w.getSettings().setJavaScriptEnabled(true);
+                  w.getSettings().setDomStorageEnabled(true);
+                  w.setWebViewClient(new WebViewClient());
+                  w.loadUrl("file:///android_asset/index.html");
               }
           }
           EOF
           
-          # settings.gradle
-          echo "include ':app'" > settings.gradle
-          
-          # build.gradle root
-          cat > build.gradle << 'EOF'
-          buildscript {
-              repositories { google(); mavenCentral() }
-              dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
-          }
-          allprojects { repositories { google(); mavenCentral() } }
-          EOF
-          
-          # app/build.gradle
           cat > app/build.gradle << 'EOF'
           apply plugin: 'com.android.application'
           android {
-              namespace 'com.dlovids.short'
-              compileSdk 34
+              compileSdkVersion 34
               defaultConfig {
                   applicationId "com.dlovids.short"
-                  minSdk 21
-                  targetSdk 34
+                  minSdkVersion 21
+                  targetSdkVersion 34
                   versionCode 1
                   versionName "1.0"
               }
               buildTypes { release { minifyEnabled false } }
+              namespace 'com.dlovids.short'
           }
           EOF
 
-      - name: Build APK with Gradle
-        run: gradle :app:assembleDebug --no-daemon --stacktrace
-          
+      - name: Build APK
+        run: gradle :app:assembleDebug --no-daemon
+        
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: DLOVID-Short-APK
+          name: DLOVID-Short-APK-FINAL
           path: app/build/outputs/apk/debug/*.apk
+          
