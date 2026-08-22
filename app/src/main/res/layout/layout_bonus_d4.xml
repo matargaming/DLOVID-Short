@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:orientation="vertical"
+ android:padding="15dp"
+ android:background="#121212">
+
+ <TextView
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="BONUS DETAIL"
+ android:textColor="#FFD700"
+ android:textSize="18sp"
+ android:textStyle="bold"
+ android:gravity="center"/>
+
+ <LinearLayout
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:orientation="vertical"
+ android:background="#1E1E1E"
+ android:padding="12dp"
+ android:layout_marginTop="10dp">
+
+  <TextView
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Total Poin"
+ android:textColor="#AAAAAA"/>
+
+  <TextView
+ android:id="@+id/txtSaldoBonus"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="15500"
+ android:textColor="#FFFFFF"
+ android:textSize="22sp"
+ android:textStyle="bold"/>
+
+ </LinearLayout>
+
+ <LinearLayout
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:orientation="horizontal"
+ android:layout_marginTop="10dp">
+
+  <Button
+ android:id="@+id/btnCairDana"
+ android:layout_width="0dp"
+ android:layout_height="wrap_content"
+ android:layout_weight="1"
+ android:text="OPTION A"/>
+
+  <Button
+ android:id="@+id/btnCairOvo"
+ android:layout_width="0dp"
+ android:layout_height="wrap_content"
+ android:layout_weight="1"
+ android:text="OPTION B"
+ android:layout_marginStart="5dp"/>
+
+  <Button
+ android:id="@+id/btnCairGopay"
+ android:layout_width="0dp"
+ android:layout_height="wrap_content"
+ android:layout_weight="1"
+ android:text="OPTION C"
+ android:layout_marginStart="5dp"/>
+
+ </LinearLayout>
+
+ <EditText
+ android:id="@+id/inputNoHp"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:hint="Input ID"
+ android:layout_marginTop="10dp"
+ android:background="#2A2A2A"
+ android:padding="10dp"/>
+
+ <Button
+ android:id="@+id/btnProsesCair"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:text="PROSES"
+ android:layout_marginTop="10dp"
+ android:backgroundTint="#
