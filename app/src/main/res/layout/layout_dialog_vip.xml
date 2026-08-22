@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:orientation="vertical"
+ android:padding="20dp">
+
+ <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Pilih Paket VIP" android:textStyle="bold" android:textSize="18sp" android:gravity="center"/>
+ <Button android:id="@+id/btnVipBulanan" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="1 BULAN - Rp 15.000" android:layout_marginTop="15dp"/>
+ <Button android:id="@+id/btnVipTahunan" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="1 TAHUN - Rp 120.000" android:layout_marginTop="10dp"/>
+
+</LinearLayout>
