@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:orientation="vertical"
+ android:padding="15dp"
+ android:background="#CC000000"
+ android:gravity="center">
+
+ <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔒 EPISODE TERKUNCI" android:textColor="#FFD700" android:textStyle="bold" android:textSize="16sp"/>
+ <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Non VIP harus nonton urutan" android:textColor="#FFFFFF" android:layout_marginTop="5dp"/>
+ <Button android:id="@+id/btnBeliVipLock" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Beli VIP Rp 15.000 - Buka Semua Episode" android:layout_marginTop="10dp" android:background="#FFD700" android:textColor="#000000"/>
+
+</LinearLayout>
