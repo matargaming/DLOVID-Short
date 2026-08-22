@@ -1,17 +1,36 @@
-plugins { id 'com.android.application' }
+apply plugin: 'com.android.application'
+
 android {
-    namespace 'com.dlovid.short'
-    compileSdk 34
+    namespace 'com.dlovids.app'
+    compileSdk 33
     defaultConfig {
-        applicationId "com.dlovid.short"
+        applicationId "com.dlovids.app"
         minSdk 21
-        targetSdk 34
-        versionCode 3
-        versionName "3.0"
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
     }
 }
-dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    
+    // Firebase kamu - dlovid-short
+    implementation 'com.google.firebase:firebase-auth:23.0.0'
+    implementation 'com.google.firebase:firebase-firestore:25.0.0'
+    implementation 'com.google.firebase:firebase-analytics:21.6.0'
+
+    // Midtrans - VIP 15.000 + QRIS
+    implementation 'com.midtrans:uikit:1.30.0'
+    implementation 'com.midtrans:corekit:1.30.0'
+
+    // Admob kamu
+    implementation 'com.google.android.gms:play-services-ads:23.0.0'
+}
