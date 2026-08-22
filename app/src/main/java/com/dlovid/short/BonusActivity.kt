@@ -1,85 +1,52 @@
 package com.dlovid.short
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.*
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
 class BonusActivity : AppCompatActivity() {
 
     private lateinit var aiBicara: AiBicaraD5
-    private var totalTeman = 0
-    private var totalPoin = 15500
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.layout_bonus_d4) // Ganti ke layout_bonus_d5 kalo mau tes robot full
+        // D5 full robot
+        setContentView(R.layout.layout_bonus_d5)
 
-        // D4 VIEW
-        val txtTotalTeman = findViewById<TextView>(R.id.txtTotalTemanD4)
-        val txtTotalPoin = findViewById<TextView>(R.id.txtTotalPoinD4)
-        val txtAiBicara = findViewById<TextView>(R.id.txtAiBicaraD4)
-        val mataKiri = findViewById<TextView>(R.id.mataKiriD4)
-        val mataKanan = findViewById<TextView>(R.id.mataKananD4)
-        val inputId = findViewById<EditText>(R.id.inputNoHp)
-        val btnProses = findViewById<Button>(R.id.btnProsesCair)
-        val btnA = findViewById<Button>(R.id.btnCairDana)
-        val btnB = findViewById<Button>(R.id.btnCairOvo)
-        val btnC = findViewById<Button>(R.id.btnCairGopay)
+        aiBicara = AiBicaraD5(this)
+        aiBicara.mulaiBicara("Selamat datang di menu bonus bos!")
 
-        // INIT AI D5
-        aiBicara = AiBicaraD5(mataKiri, mataKanan, txtAiBicara)
+        // ============ E2 - PINDAH MENU ============
+        val btnHome = findViewById<ImageView>(R.id.btnMenuHome)
+        val btnShort = findViewById<ImageView>(R.id.btnMenuShort)
+        val btnBonus = findViewById<ImageView>(R.id.btnMenuBonus)
+        val btnProfile = findViewById<ImageView>(R.id.btnMenuProfile)
 
-        // LOAD DATA
-        totalTeman = 3 // contoh dari database
-        txtTotalTeman.text = "$totalTeman"
-        txtTotalPoin.text = "Poin: $totalPoin"
-
-        // AI BICARA OTOMATIS
-        txtAiBicara.postDelayed({
-            aiBicara.bicaraBonusD4(totalTeman, totalPoin)
-        }, 1000)
-
-        // PILIHAN A/B/C
-        btnA.setOnClickListener { 
-            aiBicara.bicara("Opsi A dipilih. Masukkan ID kamu ya!")
-            inputId.hint = "Input ID Opsi A"
-        }
-        btnB.setOnClickListener { 
-            aiBicara.bicara("Opsi B dipilih. Lanjut bos!")
-            inputId.hint = "Input ID Opsi B"
-        }
-        btnC.setOnClickListener { 
-            aiBicara.bicara("Opsi C dipilih. Gas!")
-            inputId.hint = "Input ID Opsi C"
+        btnHome.setOnClickListener {
+            aiBicara.mulaiBicara("Pindah ke Home")
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
 
-        // PROSES
-        btnProses.setOnClickListener {
-            val id = inputId.text.toString()
-            if (id.isEmpty()) {
-                aiBicara.bicara("Isi ID dulu bos!")
-                Toast.makeText(this, "Isi ID dulu", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+        btnShort.setOnClickListener {
+            aiBicara.mulaiBicara("Pindah ke Short")
+            // ganti ShortActivity kalau nama activity short kamu beda
+            startActivity(Intent(this, MainActivity::class.java))
+        }
 
-            if (totalPoin < 10000) {
-                aiBicara.bicara("Poin belum cukup. Ajak teman lagi yuk!")
-                Toast.makeText(this, "Poin min 10000", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+        btnBonus.setOnClickListener {
+            aiBicara.mulaiBicara("Kamu sudah di menu bonus bos")
+        }
 
-            // SUKSES
-            aiBicara.bicara("Mantap! Proses berhasil. ID $id akan diproses 1x24 jam. Poin VIP aktif!")
-            Toast.makeText(this, "PROSES SUKSES: $id", Toast.LENGTH_LONG).show()
-            
-            // Simulasi update poin
-            totalPoin -= 10000
-            txtTotalPoin.text = "Poin: $totalPoin"
+        btnProfile.setOnClickListener {
+            aiBicara.mulaiBicara("Pindah ke Profile")
+            // startActivity(Intent(this, ProfileActivity::class.java))
         }
     }
 
     override fun onDestroy() {
-        aiBicara.destroy()
+        aiBicara.stopBicara()
         super.onDestroy()
     }
 }
