@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent">
+
+ <TextView
+ android:id="@+id/btnKotakEpisode"
+ android:layout_width="45dp"
+ android:layout_height="45dp"
+ android:layout_gravity="bottom|end"
+ android:layout_margin="15dp"
+ android:layout_marginBottom="90dp"
+ android:text="EP\n12"
+ android:gravity="center"
+ android:background="#80000000"
+ android:textColor="#FFFFFF"
+ android:textStyle="bold"
+ android:textSize="12sp"/>
+
+ <androidx.recyclerview.widget.RecyclerView
+ android:id="@+id/rvListEpisode"
+ android:layout_width="match_parent"
+ android:layout_height="200dp"
+ android:layout_gravity="bottom"
+ android:visibility="gone"
+ android:background="#CC000000"/>
+
+</FrameLayout>
