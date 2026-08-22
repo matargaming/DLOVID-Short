@@ -1,5 +1,4 @@
-
-name: Build DLOVID APK
+name: Build DLOVID APK Fixed
 on:
   push:
     branches: [ main ]
@@ -20,19 +19,72 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         
-      - name: Create Android Project Structure
+      - name: Create Correct Android Structure
         run: |
+          rm -rf app
           mkdir -p app/src/main/assets
           mkdir -p app/src/main/java/com/dlovids/short
-          # Move files if they are in root
-          cp index.html app/src/main/assets/index.html || true
-          cp AndroidManifest.xml app/src/main/AndroidManifest.xml || echo "manifest not in root"
-          cp MainActivity.java app/src/main/java/com/dlovids/short/MainActivity.java || echo "java not in root"
           
-          # Create build.gradle if not exists
-          if [ ! -f app/build.gradle ]; then
+          # Copy HTML
+          cp index.html app/src/main/assets/index.html
+          
+          # AndroidManifest
+          cat > app/src/main/AndroidManifest.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.dlovids.short">
+              <uses-permission android:name="android.permission.INTERNET"/>
+              <application android:allowBackup="true" android:label="DLOVID-Short" android:theme="@android:style/Theme.NoTitleBar">
+                  <activity android:name=".MainActivity" android:exported="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+          
+          # MainActivity
+          cat > app/src/main/java/com/dlovids/short/MainActivity.java << 'EOF'
+          package com.dlovids.short;
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          public class MainActivity extends Activity {
+              private WebView webView;
+              @Override protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  webView = new WebView(this);
+                  setContentView(webView);
+                  WebSettings s = webView.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.loadUrl("file:///android_asset/index.html");
+              }
+              @Override public void onBackPressed() {
+                  if (webView.canGoBack()) webView.goBack(); else super.onBackPressed();
+              }
+          }
+          EOF
+          
+          # settings.gradle
+          echo "include ':app'" > settings.gradle
+          
+          # build.gradle root
+          cat > build.gradle << 'EOF'
+          buildscript {
+              repositories { google(); mavenCentral() }
+              dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
+          }
+          allprojects { repositories { google(); mavenCentral() } }
+          EOF
+          
+          # app/build.gradle
           cat > app/build.gradle << 'EOF'
-          plugins { id 'com.android.application' }
+          apply plugin: 'com.android.application'
           android {
               namespace 'com.dlovids.short'
               compileSdk 34
@@ -46,22 +98,12 @@ jobs:
               buildTypes { release { minifyEnabled false } }
           }
           EOF
-          fi
-          
-          if [ ! -f build.gradle ]; then
-            echo "include ':app'" > settings.gradle
-            echo "plugins { id 'com.android.application' version '8.1.0' apply false }" > build.gradle
-          fi
 
-      - name: Build APK
-        run: |
-          chmod +x ./gradlew || true
-          # If no gradlew, build with manual gradle
-          gradle :app:assembleDebug --no-daemon || ./gradlew :app:assembleDebug --no-daemon
+      - name: Build APK with Gradle
+        run: gradle :app:assembleDebug --no-daemon --stacktrace
           
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: DLOVID-Short-APK
           path: app/build/outputs/apk/debug/*.apk
-          
