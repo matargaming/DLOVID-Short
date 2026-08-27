@@ -12,19 +12,17 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: stable
-      - name: Create missing files if needed
+      - name: Fix Android Folder
         run: |
-          mkdir -p android/gradle/wrapper
-          echo "distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-all.zip" > android/gradle/wrapper/gradle-wrapper.properties
-          mkdir -p android/app/src/main/res/drawable-v21
-          cp android/app/src/main/res/drawable/launch_background.xml android/app/src/main/res/drawable-v21/launch_background.xml || true
-      - run: flutter pub get
-      - run: flutter build apk --release --no-tree-shake-icons
-      - uses: actions/upload-artifact@v4
+          if [ ! -d "android" ]; then
+            flutter create . --platforms=android --org com.matargaming --project-name dlovid_short
+          fi
+      - name: Get Packages
+        run: flutter pub get
+      - name: Build APK
+        run: flutter build apk --release --no-tree-shake-icons
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: DLOVID-APK
           path: build/app/outputs/flutter-apk/app-release.apk
