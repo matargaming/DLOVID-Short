@@ -3,7 +3,6 @@ plugins {
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
-
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -11,35 +10,21 @@ if (localPropertiesFile.exists()) {
         localProperties.load(reader)
     }
 }
-
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
+if (flutterVersionCode == null) { flutterVersionCode = '1' }
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
+if (flutterVersionName == null) { flutterVersionName = '1.0' }
 
 android {
     namespace "com.matargaming.dlovid_short"
     compileSdk 34
     ndkVersion flutter.ndkVersion
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
+    kotlinOptions { jvmTarget = '1.8' }
+    sourceSets { main.java.srcDirs += 'src/main/kotlin' }
     defaultConfig {
         applicationId "com.matargaming.dlovid_short"
         minSdkVersion 23
@@ -47,30 +32,15 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
-
-        // ADMOB ID DARI SECRETS - AMAN TIDAK MASUK KODE
         manifestPlaceholders = [admobAppId: System.getenv("ADMOB_APP_ID") ?: "ca-app-pub-3940256099942544~3347511713"]
     }
-
-    // UNTUK AAB PLAY STORE UNIVERSAL HP + TABLET
     buildTypes {
         release {
-            // Untuk build di GitHub Actions pakai debug key dulu, nanti Play Store akan re-sign
             signingConfig signingConfigs.debug
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            manifestPlaceholders = [admobAppId: "ca-app-pub-3940256099942544~3347511713"]
         }
     }
 }
-
-flutter {
-    source '../..'
-}
-
-dependencies {
-    implementation "androidx.multidex:multidex:2.0.1"
-}
+flutter { source '../..' }
+dependencies { implementation "androidx.multidex:multidex:2.0.1" }
