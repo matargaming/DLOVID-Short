@@ -1,4 +1,4 @@
-name: Build APK
+name: Build APK - Full Online Universal + Secret
 on:
   push:
     branches: [ main ]
@@ -12,24 +12,30 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: stable
-      - name: Rebuild Android Folder (Fix Gradle)
+
+      - name: Rebuild Android Clean
         run: |
-          echo "Backup lib..."
           mv lib lib_backup || true
-          echo "Hapus android rusak..."
           rm -rf android
-          echo "Buat android baru V2..."
           flutter create . --platforms=android --project-name dlovid_short --org com.matargaming --no-pub
-          echo "Restore lib..."
           rm -rf lib
           mv lib_backup lib
-          ls -la android/
+
+      - name: Connect GOOGLE_SERVICES_JSON from Secret
+        run: |
+          mkdir -p android/app
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json
+          echo "Google JSON connected from secret!"
+          ls -lh android/app/google-services.json
+
       - name: Get Packages
         run: flutter pub get
-      - name: Build APK
-        run: flutter build apk --release --no-tree-shake-icons
+
+      - name: Build APK with TMDB Secret
+        run: flutter build apk --release --no-tree-shake-icons --dart-define=TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: DLOVID-APK
+          name: DLOVID-FULL-ONLINE-TMDB
           path: build/app/outputs/flutter-apk/app-release.apk
