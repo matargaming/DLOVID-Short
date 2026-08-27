@@ -25,7 +25,6 @@ class MainNav extends StatefulWidget {
 class _MainNavState extends State<MainNav> {
   int _index = 0;
   final _pages = [SaranScreen(), HomeScreen(), BonusScreen(), AkunScreen()];
-
   @override
   Widget build(BuildContext context){
     return Scaffold(
