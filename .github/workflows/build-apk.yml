@@ -25,24 +25,19 @@ jobs:
           GOOGLE_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
           mkdir -p android/app
-          # Cek apakah secret adalah JSON mentah atau base64
           if echo "$GOOGLE_JSON" | grep -q "project_info"; then
-            echo "Detected raw JSON, writing directly..."
             printf '%s' "$GOOGLE_JSON" > android/app/google-services.json
           else
-            echo "Detected base64, decoding..."
             printf '%s' "$GOOGLE_JSON" | base64 --decode > android/app/google-services.json
           fi
-          echo "google-services.json created:"
           ls -lh android/app/google-services.json
-          head -n 5 android/app/google-services.json
 
       - name: Pub get
         run: flutter pub get
 
       - name: Build APK Universal (HP & Tablet)
         run: |
-          flutter build apk --release --no-split-per-abi \
+          flutter build apk --release \
             --dart-define=TMDB_API_KEY=${{ secrets.TMDB_API_KEY }} \
             --dart-define=MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }} \
             --dart-define=MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }} \
@@ -66,4 +61,5 @@ jobs:
           name: dlovid-universal
           path: |
             build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab            build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/bundle/release/app-release.aab
