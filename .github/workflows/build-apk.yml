@@ -21,7 +21,21 @@ jobs:
           channel: 'stable'
 
       - name: Decode google-services.json
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+        env:
+          GOOGLE_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          mkdir -p android/app
+          # Cek apakah secret adalah JSON mentah atau base64
+          if echo "$GOOGLE_JSON" | grep -q "project_info"; then
+            echo "Detected raw JSON, writing directly..."
+            printf '%s' "$GOOGLE_JSON" > android/app/google-services.json
+          else
+            echo "Detected base64, decoding..."
+            printf '%s' "$GOOGLE_JSON" | base64 --decode > android/app/google-services.json
+          fi
+          echo "google-services.json created:"
+          ls -lh android/app/google-services.json
+          head -n 5 android/app/google-services.json
 
       - name: Pub get
         run: flutter pub get
