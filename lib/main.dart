@@ -3,7 +3,7 @@ import 'screens/saran_screen.dart';
 import 'screens/bonus_screen.dart';
 import 'screens/akun_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/login_screen.dart';
+import 'screens/login/login_gate.dart'; // FIX: jalur bener sesuai folder Bos
 
 void main() => runApp(DlovidApp());
 
@@ -12,7 +12,7 @@ class DlovidApp extends StatelessWidget {
   Widget build(BuildContext context){
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(), // Awal login
+      home: LoginGate(), // FIX: class Bos namanya LoginGate di dalam login_gate.dart
     );
   }
 }
