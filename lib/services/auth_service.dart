@@ -1,27 +1,20 @@
-name: dlovid_short
-description: DLOVID-Short - 13 Poin Login
-publish_to: 'none'
-version: 1.0.0+1
-environment:
-  sdk: '>=3.0.0 <4.0.0'
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-dependencies:
-  flutter:
-    sdk: flutter
-  cupertino_icons: ^1.0.6
-  url_launcher: ^6.2.5
-  http: ^1.2.0
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.15.3
-  cloud_firestore: ^4.15.5
-  google_mobile_ads: ^5.1.0
+class AuthService {
+  final _auth = FirebaseAuth.instance;
+  final _db = FirebaseFirestore.instance;
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  Future<dynamic> login(String emailOrHp, String sandi) async {
+    // logic login kamu
+  }
+  
+  Future<void> register({required String emailOrHp, required String sandi, required String confirm, required String referralCode, required String otp}) async {
+    // logic register kamu
+  }
 
-flutter:
-  uses-material-design: true
-  assets:
-    - assets/images/
-    - assets/icon/
+  Future<bool> adminStage2(String pass2, String pass3) async {
+    // logic cek pass2 & pass3
+    return true;
+  }
+}
