@@ -1,24 +1,49 @@
 import 'package:flutter/material.dart';
-import 'screens/login/login_gate.dart';
+import 'screens/saran_screen.dart';
+import 'screens/bonus_screen.dart';
+import 'screens/akun_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
 
-void main() {
-  runApp(const DLOVIDApp());
+void main() => runApp(DlovidApp());
+
+class DlovidApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context){
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: LoginScreen(), // Awal login
+    );
+  }
 }
 
-class DLOVIDApp extends StatelessWidget {
-  const DLOVIDApp({super.key});
+class MainNav extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'DLOVID-Short',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF080808),
-        primaryColor: const Color(0xFFD4AF37),
-        useMaterial3: true,
+  _MainNavState createState() => _MainNavState();
+}
+
+class _MainNavState extends State<MainNav> {
+  int _index = 0; // 0 = Saran - langsung ke menu Saran pas buka (Point C.5)
+  final _pages = [SaranScreen(), HomeScreen(), BonusScreen(), AkunScreen()];
+
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: _pages[_index],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black,
+        selectedItemColor: Colors.amber,
+        unselectedItemColor: Colors.white54,
+        currentIndex: _index,
+        onTap: (i)=> setState(()=> _index=i),
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.recommend), label: "Saran"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard), label: "Bonus"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Akun"),
+        ],
       ),
-      home: const LoginGate(),
     );
   }
 }
