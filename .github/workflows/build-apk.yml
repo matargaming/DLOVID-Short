@@ -1,4 +1,4 @@
-name: Build APK - Full Online Universal + Secret
+name: Build APK - DLOVID Full Secret 7
 on:
   push:
     branches: [ main ]
@@ -21,21 +21,31 @@ jobs:
           rm -rf lib
           mv lib_backup lib
 
-      - name: Connect GOOGLE_SERVICES_JSON from Secret
+      - name: Connect GOOGLE JSON from Secret
         run: |
           mkdir -p android/app
           echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json
-          echo "Google JSON connected from secret!"
-          ls -lh android/app/google-services.json
+
+      - name: Connect ADMOB APP ID to Manifest
+        run: |
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          sed -i '/<\/application>/i \        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="${{ secrets.ADMOB_APP_ID }}"/> ' $MANIFEST
+          echo "AdMob App ID Connected!"
 
       - name: Get Packages
         run: flutter pub get
 
-      - name: Build APK with TMDB Secret
-        run: flutter build apk --release --no-tree-shake-icons --dart-define=TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}
+      - name: Build APK with 6 Secrets (Server Key Tidak Masuk APK - Aman!)
+        run: |
+          flutter build apk --release --no-tree-shake-icons \
+            --dart-define=TMDB_API_KEY=${{ secrets.TMDB_API_KEY }} \
+            --dart-define=ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }} \
+            --dart-define=ADMOB_BANNER_ID=${{ secrets.ADMOB_BANNER_ID }} \
+            --dart-define=ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }} \
+            --dart-define=MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: DLOVID-FULL-ONLINE-TMDB
+          name: DLOVID-7-SECRET-LENGKAP
           path: build/app/outputs/flutter-apk/app-release.apk
