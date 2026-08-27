@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
+import '../../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -19,6 +19,18 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isAdminStage2 = false;
   bool _isDaftar = false;
   final _auth = AuthService();
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _passCtrl.dispose();
+    _confirmCtrl.dispose();
+    _referralCtrl.dispose();
+    _otpCtrl.dispose();
+    _adminPass2Ctrl.dispose();
+    _adminPass3Ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,9 +109,9 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: 20),
               Text("Masukkan Sandi 2 & 3", style: TextStyle(color: Colors.white70)),
               SizedBox(height: 12),
-              _field(_adminPass2Ctrl, "Sandi 2 : Bosmatar456.654", isPass: true),
+              _field(_adminPass2Ctrl, "Sandi 2", isPass: true, obscure: true),
               SizedBox(height: 12),
-              _field(_adminPass3Ctrl, "Sandi 3 : Bosmatar21100169830188", isPass: true),
+              _field(_adminPass3Ctrl, "Sandi 3", isPass: true, obscure: true),
               SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700], minimumSize: Size(double.infinity, 50)),
@@ -130,8 +142,4 @@ class _LoginScreenState extends State<LoginScreen> {
         hintStyle: TextStyle(color: Colors.white54),
         filled: true, fillColor: Colors.grey[900],
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        suffixIcon: isPass? IconButton(icon: Icon(obscure? Icons.visibility_off : Icons.visibility, color: Colors.amber), onPressed: toggle) : null,
-      ),
-    );
-  }
-}
+        suffixIcon: isPass? IconButton(icon:
