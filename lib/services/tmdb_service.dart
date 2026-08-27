@@ -1,20 +1,29 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'app_secrets.dart';
 
 class TmdbService {
-  // Diambil dari --dart-define di GitHub Actions, bukan dari kode
-  static const _apiKey = String.fromEnvironment('TMDB_API_KEY');
-  static const _baseUrl = 'https://api.themoviedb.org/3';
+  static const _apiKey = AppSecrets.tmdbApiKey;
+  static const _baseUrl = AppSecrets.tmdbBaseUrl;
 
-  static Future<List<dynamic>> getTrending() async {
-    if (_apiKey.isEmpty) throw Exception('TMDB_API_KEY tidak ada di --dart-define');
-    final res = await http.get(Uri.parse('$_baseUrl/trending/movie/day?api_key=$_apiKey'));
+  // Method yang dipanggil home_screen.dart kamu
+  static Future<List<dynamic>> getMovies() async {
+    if (_apiKey.isEmpty) return [];
+    final url = Uri.parse('$_baseUrl/trending/movie/day?api_key=$_apiKey&language=id-ID');
+    final res = await http.get(url);
     if (res.statusCode == 200) {
-      return jsonDecode(res.body)['results'];
+      final data = jsonDecode(res.body);
+      return data['results'] ?? [];
     } else {
-      throw Exception('Gagal load trending: ${res.statusCode}');
+      return [];
     }
   }
-  
-  // Tambahkan method lain kamu di sini...
+
+  // Alias biar kompatibel dengan kode lama
+  static Future<List<dynamic>> getTrending() => getMovies();
+
+  static String imageUrl(String path) {
+    if (path.isEmpty) return '';
+    return 'https://image.tmdb.org/t/p/w500$path';
+  }
 }
