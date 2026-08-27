@@ -12,11 +12,18 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: stable
-      - name: Fix Android Folder
+      - name: Rebuild Android Folder (Fix Gradle)
         run: |
-          if [ ! -d "android" ]; then
-            flutter create . --platforms=android --org com.matargaming --project-name dlovid_short
-          fi
+          echo "Backup lib..."
+          mv lib lib_backup || true
+          echo "Hapus android rusak..."
+          rm -rf android
+          echo "Buat android baru V2..."
+          flutter create . --platforms=android --project-name dlovid_short --org com.matargaming --no-pub
+          echo "Restore lib..."
+          rm -rf lib
+          mv lib_backup lib
+          ls -la android/
       - name: Get Packages
         run: flutter pub get
       - name: Build APK
