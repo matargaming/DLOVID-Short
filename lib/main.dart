@@ -3,7 +3,7 @@ import 'screens/saran_screen.dart';
 import 'screens/bonus_screen.dart';
 import 'screens/akun_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/login/login_gate.dart'; // FIX: jalur bener sesuai folder Bos
+import 'screens/login/login_gate.dart';
 
 void main() => runApp(DlovidApp());
 
@@ -12,7 +12,7 @@ class DlovidApp extends StatelessWidget {
   Widget build(BuildContext context){
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginGate(), // FIX: class Bos namanya LoginGate di dalam login_gate.dart
+      home: LoginGate(),
     );
   }
 }
@@ -23,7 +23,7 @@ class MainNav extends StatefulWidget {
 }
 
 class _MainNavState extends State<MainNav> {
-  int _index = 0; // 0 = Saran - langsung ke menu Saran pas buka (Point C.5)
+  int _index = 0;
   final _pages = [SaranScreen(), HomeScreen(), BonusScreen(), AkunScreen()];
 
   @override
