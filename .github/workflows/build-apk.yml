@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -18,13 +18,11 @@ jobs:
 
       - name: Fix Launcher Icon from assets/icon
         run: |
-          echo "Copying icon from assets/icon/app_icon.png to mipmap..."
           for d in hdpi mdpi xhdpi xxhdpi xxxhdpi; do
             mkdir -p android/app/src/main/res/mipmap-$d
             cp assets/icon/app_icon.png android/app/src/main/res/mipmap-$d/launcher_icon.png || true
             cp assets/icon/app_icon.png android/app/src/main/res/mipmap-$d/ic_launcher.png || true
           done
-          ls -lh android/app/src/main/res/mipmap-hdpi/
 
       - name: Decode google-services.json
         env:
