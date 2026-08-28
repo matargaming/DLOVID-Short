@@ -1,30 +1,53 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'screens/saran_screen.dart';
+import 'screens/bonus_screen.dart';
+import 'screens/akun_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/login/login_gate.dart';
 
-class AuthService {
-  final _auth = FirebaseAuth.instance;
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(); // INI KUNCINYA!
+  runApp(DlovidApp());
+}
 
-  Future<dynamic> login(String emailOrHp, String sandi) async {
-    // TODO: ganti dengan logic kamu
-    // return null jika mau masuk admin stage 2
-    try {
-      await _auth.signInWithEmailAndPassword(email: emailOrHp, password: sandi);
-      return true;
-    } catch (e) {
-      return null; // biar masuk stage 2 sesuai kode kamu
-    }
+class DlovidApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context){
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: LoginGate(),
+    );
   }
+}
 
-  Future<void> register({required String emailOrHp, required String sandi, required String confirm, required String referralCode, required String otp}) async {
-    if (sandi!= confirm) throw Exception('Confirm sandi tidak sama');
-    if (referralCode.isEmpty) throw Exception('Kode referral wajib');
-    await _auth.createUserWithEmailAndPassword(email: emailOrHp, password: sandi);
-  }
+class MainNav extends StatefulWidget {
+  @override
+  _MainNavState createState() => _MainNavState();
+}
 
-  Future<bool> adminStage2(String pass2, String pass3) async {
-    // Cek sandi admin kamu di sini, jangan di UI
-    if (pass2 == 'Bosmatar456.654' && pass3 == 'Bosmatar21100169830188') {
-      return true;
-    }
-    throw Exception('Sandi Admin 2/3 salah');
+class _MainNavState extends State<MainNav> {
+  int _index = 0;
+  final _pages = [SaranScreen(), HomeScreen(), BonusScreen(), AkunScreen()];
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: _pages[_index],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black,
+        selectedItemColor: Colors.amber,
+        unselectedItemColor: Colors.white54,
+        currentIndex: _index,
+        onTap: (i)=> setState(()=> _index=i),
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.recommend), label: "Saran"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard), label: "Bonus"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Akun"),
+        ],
+      ),
+    );
   }
 }
