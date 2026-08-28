@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:flutter/material.dart';
 import '../../main.dart';
 
 class LoginGate extends StatefulWidget {
@@ -17,9 +17,7 @@ class _LoginGateState extends State<LoginGate> {
   final _p2 = TextEditingController();
   final _p3 = TextEditingController();
   bool _ob1 = true, _ob2 = true, _isAdminStage2 = false, _isDaftar = false;
-
   String _generatedOtp = "";
-  bool _otpSent = false;
 
   static const String adminEmail = "matargaming17@gmail.com";
   static const String adminPass1 = "Bosmatar123.321";
@@ -39,28 +37,21 @@ class _LoginGateState extends State<LoginGate> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red[700]));
   }
 
-  // OTP KONEK GMAIL ADMIN
   void _kirimOtp() {
     final email = _email.text.trim();
     if (email.isEmpty) { _showError("Isi Email/No HP dulu buat kirim OTP"); return; }
-
     final rand = Random();
-    _generatedOtp = (100000 + rand.nextInt(900000)).toString(); // 6 digit
-    _otpSent = true;
-
-    // Simulasi konek Gmail admin - di production ini kirim via Firebase / backend ke matargaming17@gmail.com
+    _generatedOtp = (100000 + rand.nextInt(900000)).toString();
+    // Simulasi konek Gmail admin - di production ganti pakai Firebase Auth / API Email
+    debugPrint("OTP untuk $email dikirim ke Gmail admin $adminEmail : $_generatedOtp");
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("OTP terkirim ke Gmail Admin $adminEmail: $_generatedOtp\n(Cek log admin)"),
-        backgroundColor: Colors.green[700],
-        duration: const Duration(seconds: 5),
-      ),
+      SnackBar(content: Text("OTP terkirim ke $adminEmail (konek Gmail admin): $_generatedOtp"), backgroundColor: Colors.green[700], duration: const Duration(seconds: 5)),
     );
-    print("=== OTP ADMIN $adminEmail : $_generatedOtp untuk user $email ===");
+    setState(() { _otp.text = _generatedOtp; }); // auto isi buat testing, nanti hapus baris ini kalau mau manual
   }
 
   void _prosesLogin() {
-    _showError("Login user belum dibuka di rangka ini. Admin masuk lewat Daftar");
+    _showError("Rangka ini login user belum dibuka. Daftar dulu");
   }
 
   void _prosesDaftar() {
@@ -70,15 +61,14 @@ class _LoginGateState extends State<LoginGate> {
     final ref = _ref.text.trim();
     final otp = _otp.text.trim();
 
-    if (ref.isEmpty) { _showError("DITOLAK: Tanpa referral tidak bisa"); return; }
+    if (ref.isEmpty) { _showError("Tanpa referral ditolak"); return; }
     if (email.isEmpty || sandi.isEmpty || confirm.isEmpty || otp.isEmpty) { _showError("Semua field wajib"); return; }
     if (sandi!= confirm) { _showError("Confirm tidak sama"); return; }
 
-    // OTP HARUS KONEK GMAIL ADMIN - VALIDASI
-    if (!_otpSent) { _showError("Klik Kirim OTP dulu, OTP konek ke Gmail admin"); return; }
-    if (otp!= _generatedOtp) { _showError("OTP salah! Cek OTP di Gmail admin $adminEmail"); return; }
+    // Validasi OTP konek Gmail admin
+    if (_generatedOtp.isEmpty) { _showError("Klik Kirim OTP dulu - OTP konek Gmail admin"); return; }
+    if (otp!= _generatedOtp) { _showError("OTP salah - cek Gmail admin $adminEmail"); return; }
 
-    // Admin lewat Daftar
     if (email == adminEmail && ref == referralAdminKey) {
       if (sandi!= adminPass1) { _showError("Sandi 1 admin salah"); return; }
       setState(() => _isAdminStage2 = true);
@@ -86,10 +76,10 @@ class _LoginGateState extends State<LoginGate> {
     }
 
     if (ref!= referralOwner && ref!= referralAdminKey &&!ref.startsWith("DLOVID-")) {
-      _showError("Kode referral tidak valid"); return;
+      _showError("Referral tidak valid"); return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Daftar sukses!"), backgroundColor: Colors.green));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Daftar sukses"), backgroundColor: Colors.green));
     setState(() => _isDaftar = false);
   }
 
@@ -108,7 +98,7 @@ class _LoginGateState extends State<LoginGate> {
         child: Column(
           children: [
             const SizedBox(height: 60),
-            Image.asset("assets/images/logo_login.png", width: 110, height: 110, errorBuilder: (c,e,s)=> Container(width: 100, height: 100, decoration: BoxDecoration(color: Colors.amber[700], shape: BoxShape.circle), child: const Center(child: Text("D", style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold))))),
+            Image.asset("assets/images/logo_login.png", width: 110, height: 110, errorBuilder: (c,e,s)=> Container(width: 100, height: 100, decoration: BoxDecoration(color: Colors.amber[700], shape: BoxShape.circle), child: const Center(child: Text("D", style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold)))))),
             const SizedBox(height: 30),
             if (!_isAdminStage2)...[
               TextField(controller: _email, style: const TextStyle(color: Colors.white), decoration: _dec("Email / No HP")),
@@ -120,23 +110,18 @@ class _LoginGateState extends State<LoginGate> {
                 const SizedBox(height: 12),
                 TextField(controller: _ref, style: const TextStyle(color: Colors.white), decoration: _dec("Kode Referral Wajib")),
                 const SizedBox(height: 12),
-                // OTP KONEK GMAIL ADMIN
                 Row(
                   children: [
-                    Expanded(child: TextField(controller: _otp, style: const TextStyle(color: Colors.white), decoration: _dec("OTP via Gmail Admin"))),
+                    Expanded(child: TextField(controller: _otp, style: const TextStyle(color: Colors.white), decoration: _dec("OTP via HP/Email"))),
                     const SizedBox(width: 8),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), minimumSize: const Size(90, 50)),
-                      onPressed: _kirimOtp,
-                      child: const Text("Kirim", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                    ),
+                    ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700]), onPressed: _kirimOtp, child: const Text("Kirim OTP", style: TextStyle(color: Colors.black, fontSize: 12))),
                   ],
                 ),
                 const SizedBox(height: 6),
-                const Text("OTP otomatis terkirim ke matargaming17@gmail.com", style: TextStyle(color: Colors.white24, fontSize: 10)),
+                const Text("OTP konek ke Gmail admin", style: TextStyle(color: Colors.white24, fontSize: 10)),
                 const SizedBox(height: 12),
               ],
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               SizedBox(width: double.infinity, height: 50, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))), onPressed: ()=> _isDaftar? _prosesDaftar() : _prosesLogin(), child: Text(_isDaftar? "DAFTAR" : "LOGIN", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)))),
               TextButton(onPressed: ()=> setState(()=> _isDaftar =!_isDaftar), child: Text(_isDaftar? "Sudah punya akun? Login" : "Pengguna baru? Daftar isi kode referral", style: const TextStyle(color: Colors.amber))),
             ] else...[
@@ -149,3 +134,8 @@ class _LoginGateState extends State<LoginGate> {
               SizedBox(width: double.infinity, height: 50, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))), onPressed: _prosesAdminStage2, child: const Text("MASUK PANEL ADMIN", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)))),
             ]
           ],
+        ),
+      ),
+    );
+  }
+}
