@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import '../../main.dart';
 
 class LoginGate extends StatefulWidget {
@@ -17,12 +18,14 @@ class _LoginGateState extends State<LoginGate> {
   final _p3 = TextEditingController();
   bool _ob1 = true, _ob2 = true, _isAdminStage2 = false, _isDaftar = false;
 
-  // POINT 10-13
+  String _generatedOtp = "";
+  bool _otpSent = false;
+
   static const String adminEmail = "matargaming17@gmail.com";
   static const String adminPass1 = "Bosmatar123.321";
   static const String adminPass2 = "Bosmatar456.654";
   static const String adminPass3 = "Bosmatar21100169830188";
-  static const String referralAdminKey = "DVS0000"; // POINT 13 - Kunci referral admin
+  static const String referralAdminKey = "DVS0000";
   static const String referralOwner = "DLOVID-OWNER-001";
 
   InputDecoration _dec(String hint, {Widget? suffix}) => InputDecoration(
@@ -36,20 +39,28 @@ class _LoginGateState extends State<LoginGate> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red[700]));
   }
 
-  void _prosesLogin() {
+  // OTP KONEK GMAIL ADMIN
+  void _kirimOtp() {
     final email = _email.text.trim();
-    final sandi = _pass.text.trim();
-    if (email.isEmpty || sandi.isEmpty) {
-      _showError("Email/No HP & Sandi wajib - DITOLAK");
-      return;
-    }
-    // POINT 11 - Admin tahap 1
-    if (email == adminEmail && sandi == adminPass1) {
-      setState(() => _isAdminStage2 = true);
-      return;
-    }
-    // POINT 14 - Rangka hanya admin bisa login
-    _showError("DITOLAK: No HP/Email atau sandi tidak sesuai. Rangka ini hanya admin bisa login");
+    if (email.isEmpty) { _showError("Isi Email/No HP dulu buat kirim OTP"); return; }
+
+    final rand = Random();
+    _generatedOtp = (100000 + rand.nextInt(900000)).toString(); // 6 digit
+    _otpSent = true;
+
+    // Simulasi konek Gmail admin - di production ini kirim via Firebase / backend ke matargaming17@gmail.com
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("OTP terkirim ke Gmail Admin $adminEmail: $_generatedOtp\n(Cek log admin)"),
+        backgroundColor: Colors.green[700],
+        duration: const Duration(seconds: 5),
+      ),
+    );
+    print("=== OTP ADMIN $adminEmail : $_generatedOtp untuk user $email ===");
+  }
+
+  void _prosesLogin() {
+    _showError("Login user belum dibuka di rangka ini. Admin masuk lewat Daftar");
   }
 
   void _prosesDaftar() {
@@ -59,45 +70,32 @@ class _LoginGateState extends State<LoginGate> {
     final ref = _ref.text.trim();
     final otp = _otp.text.trim();
 
-    // POINT 9 - Tanpa referral ditolak
-    if (ref.isEmpty) {
-      _showError("DITOLAK: Daftar tanpa referral tidak bisa!");
+    if (ref.isEmpty) { _showError("DITOLAK: Tanpa referral tidak bisa"); return; }
+    if (email.isEmpty || sandi.isEmpty || confirm.isEmpty || otp.isEmpty) { _showError("Semua field wajib"); return; }
+    if (sandi!= confirm) { _showError("Confirm tidak sama"); return; }
+
+    // OTP HARUS KONEK GMAIL ADMIN - VALIDASI
+    if (!_otpSent) { _showError("Klik Kirim OTP dulu, OTP konek ke Gmail admin"); return; }
+    if (otp!= _generatedOtp) { _showError("OTP salah! Cek OTP di Gmail admin $adminEmail"); return; }
+
+    // Admin lewat Daftar
+    if (email == adminEmail && ref == referralAdminKey) {
+      if (sandi!= adminPass1) { _showError("Sandi 1 admin salah"); return; }
+      setState(() => _isAdminStage2 = true);
       return;
     }
 
-    // POINT 13 - Kunci referral admin harus DVS0000
-    if (email == adminEmail) {
-      if (ref!= referralAdminKey) {
-        _showError("DITOLAK: Referral admin harus $referralAdminKey");
-        return;
-      }
-    } else {
-      // POINT 8 - User biasa referral dari pemilik / pengguna pertama
-      if (ref!= referralOwner && ref!= referralAdminKey &&!ref.startsWith("DLOVID-")) {
-        _showError("Kode referral tidak valid. Minta kode dari pemilik apk");
-        return;
-      }
+    if (ref!= referralOwner && ref!= referralAdminKey &&!ref.startsWith("DLOVID-")) {
+      _showError("Kode referral tidak valid"); return;
     }
 
-    if (email.isEmpty || sandi.isEmpty || confirm.isEmpty || otp.isEmpty) {
-      _showError("Semua field wajib isi");
-      return;
-    }
-    if (sandi!= confirm) {
-      _showError("Confirm sandi tidak sama");
-      return;
-    }
-
-    // POINT 8 - Generate kode baru untuk pengguna berikutnya
-    final newCode = "DLOVID-${email.substring(0, 2).toUpperCase()}${DateTime.now().millisecondsSinceEpoch % 10000}";
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Daftar sukses! Kode referral kamu: $newCode - bagikan ke pengguna berikutnya"), backgroundColor: Colors.green[700], duration: const Duration(seconds: 5)));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Daftar sukses!"), backgroundColor: Colors.green));
     setState(() => _isDaftar = false);
   }
 
   void _prosesAdminStage2() {
     if (_p2.text.trim()!= adminPass2) { _showError("Sandi 2 salah"); return; }
     if (_p3.text.trim()!= adminPass3) { _showError("Sandi 3 salah"); return; }
-    // POINT 12 - Login panel admin
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainNav()));
   }
 
@@ -110,48 +108,44 @@ class _LoginGateState extends State<LoginGate> {
         child: Column(
           children: [
             const SizedBox(height: 60),
-            // POINT 1 - Logo D gold
-            Container(width: 100, height: 100, decoration: BoxDecoration(color: Colors.amber[700], shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.amber.withOpacity(0.6), blurRadius: 20)]), child: const Center(child: Text("D", style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.black)))),
-            const SizedBox(height: 12),
-            Text("Owner: $referralOwner | Admin Key: $referralAdminKey", style: const TextStyle(color: Colors.white24, fontSize: 10)),
-            const SizedBox(height: 24),
+            Image.asset("assets/images/logo_login.png", width: 110, height: 110, errorBuilder: (c,e,s)=> Container(width: 100, height: 100, decoration: BoxDecoration(color: Colors.amber[700], shape: BoxShape.circle), child: const Center(child: Text("D", style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold))))),
+            const SizedBox(height: 30),
             if (!_isAdminStage2)...[
-              // POINT 2 - Email/No HP
               TextField(controller: _email, style: const TextStyle(color: Colors.white), decoration: _dec("Email / No HP")),
               const SizedBox(height: 12),
-              // POINT 3 - Sandi + intip
               TextField(controller: _pass, obscureText: _ob1, style: const TextStyle(color: Colors.white), decoration: _dec("Sandi", suffix: IconButton(icon: Icon(_ob1? Icons.visibility_off: Icons.visibility, color: Colors.amber), onPressed: ()=> setState(()=> _ob1 =!_ob1)))),
               const SizedBox(height: 12),
               if (_isDaftar)...[
-                // POINT 4 - Confirm + intip
                 TextField(controller: _confirm, obscureText: _ob2, style: const TextStyle(color: Colors.white), decoration: _dec("Confirm Sandi", suffix: IconButton(icon: Icon(_ob2? Icons.visibility_off: Icons.visibility, color: Colors.amber), onPressed: ()=> setState(()=> _ob2 =!_ob2)))),
                 const SizedBox(height: 12),
-                // POINT 6 - Kode referral
-                TextField(controller: _ref, style: const TextStyle(color: Colors.white), decoration: _dec("Kode Referral Wajib (Admin: DVS0000)")),
+                TextField(controller: _ref, style: const TextStyle(color: Colors.white), decoration: _dec("Kode Referral Wajib")),
                 const SizedBox(height: 12),
-                // POINT 5 - OTP
-                TextField(controller: _otp, style: const TextStyle(color: Colors.white), decoration: _dec("OTP via HP/Email")),
+                // OTP KONEK GMAIL ADMIN
+                Row(
+                  children: [
+                    Expanded(child: TextField(controller: _otp, style: const TextStyle(color: Colors.white), decoration: _dec("OTP via Gmail Admin"))),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), minimumSize: const Size(90, 50)),
+                      onPressed: _kirimOtp,
+                      child: const Text("Kirim", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                const Text("OTP otomatis terkirim ke matargaming17@gmail.com", style: TextStyle(color: Colors.white24, fontSize: 10)),
                 const SizedBox(height: 12),
               ],
-              const SizedBox(height: 16),
-              SizedBox(width: double.infinity, height: 50, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700]), onPressed: ()=> _isDaftar? _prosesDaftar() : _prosesLogin(), child: Text(_isDaftar? "DAFTAR" : "LOGIN", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)))),
+              const SizedBox(height: 10),
+              SizedBox(width: double.infinity, height: 50, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))), onPressed: ()=> _isDaftar? _prosesDaftar() : _prosesLogin(), child: Text(_isDaftar? "DAFTAR" : "LOGIN", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)))),
               TextButton(onPressed: ()=> setState(()=> _isDaftar =!_isDaftar), child: Text(_isDaftar? "Sudah punya akun? Login" : "Pengguna baru? Daftar isi kode referral", style: const TextStyle(color: Colors.amber))),
-              if (!_isDaftar) const Padding(padding: EdgeInsets.only(top: 8), child: Text("Rangka: Hanya admin bisa login\nAdmin: matargaming17@gmail.com / Bosmatar123.321\nReferral Admin: DVS0000", textAlign: TextAlign.center, style: TextStyle(color: Colors.white24, fontSize: 10))),
             ] else...[
-              const Text("LOGIN ADMIN TAHAP 2", style: TextStyle(color: Colors.amber, fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              const Text("Masukkan 2 sandi terakhir", style: TextStyle(color: Colors.white70)),
+              const Text("LOGIN ADMIN TAHAP 2", style: TextStyle(color: Colors.amber, fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
-              TextField(controller: _p2, obscureText: true, style: const TextStyle(color: Colors.white), decoration: _dec("Sandi 2: Bosmatar456.654")),
+              TextField(controller: _p2, obscureText: true, style: const TextStyle(color: Colors.white), decoration: _dec("Sandi 2")),
               const SizedBox(height: 12),
-              TextField(controller: _p3, obscureText: true, style: const TextStyle(color: Colors.white), decoration: _dec("Sandi 3: Bosmatar21100169830188")),
+              TextField(controller: _p3, obscureText: true, style: const TextStyle(color: Colors.white), decoration: _dec("Sandi 3")),
               const SizedBox(height: 20),
-              SizedBox(width: double.infinity, height: 50, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700]), onPressed: _prosesAdminStage2, child: const Text("LOGIN PANEL ADMIN", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)))),
-              TextButton(onPressed: ()=> setState(()=> _isAdminStage2 = false), child: const Text("Kembali", style: TextStyle(color: Colors.white54))),
+              SizedBox(width: double.infinity, height: 50, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))), onPressed: _prosesAdminStage2, child: const Text("MASUK PANEL ADMIN", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)))),
             ]
           ],
-        ),
-      ),
-    );
-  }
-}
