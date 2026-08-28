@@ -71,7 +71,7 @@ class _LoginGateState extends State<LoginGate> {
     if (ref.isEmpty) { _showError("Tanpa referral ditolak"); return; }
     if (email.isEmpty || sandi.isEmpty || confirm.isEmpty || otp.isEmpty) { _showError("Semua wajib isi"); return; }
     if (sandi != confirm) { _showError("Confirm tidak sama"); return; }
-    if (_generatedOtp.isEmpty) { _showError("Klik Kirim OTP dulu"); return; }
+    if (_generatedOtp.isEmpty) { _showError("Klik Minta OTP dulu"); return; }
     if (otp != _generatedOtp) { _showError("OTP salah"); return; }
 
     if (email == adminEmail && ref == referralAdminKey) {
@@ -119,14 +119,28 @@ class _LoginGateState extends State<LoginGate> {
               const SizedBox(height: 12),
               TextField(controller: _ref, style: const TextStyle(color: Colors.white), decoration: _dec("Kode Referral Wajib")),
               const SizedBox(height: 12),
-              TextField(controller: _otp, style: const TextStyle(color: Colors.white), decoration: _dec("OTP via HP/Email")),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade700), onPressed: _kirimOtp, child: const Text("Kirim OTP", style: TextStyle(color: Colors.black))),
+              // FIX MINTA OTP DI KANAN DALAM KOTAK
+              TextField(
+                controller: _otp,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: "OTP via HP/Email",
+                  hintStyle: const TextStyle(color: Colors.white54),
+                  filled: true,
+                  fillColor: const Color(0xFF1A1A1A),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: TextButton(
+                      onPressed: _kirimOtp,
+                      style: TextButton.styleFrom(minimumSize: const Size(80, 36), padding: const EdgeInsets.symmetric(horizontal: 12)),
+                      child: const Text("Minta OTP", style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 13)),
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 4),
-              const Text("OTP konek ke Gmail admin", style: TextStyle(color: Colors.white24, fontSize: 10)),
+              const SizedBox(height: 6),
+              const Align(alignment: Alignment.centerLeft, child: Text("OTP konek ke Gmail admin", style: TextStyle(color: Colors.white24, fontSize: 10))),
               const SizedBox(height: 12),
             ],
           ),
@@ -169,7 +183,7 @@ class _LoginGateState extends State<LoginGate> {
         child: Column(
           children: [
             const SizedBox(height: 60),
-            Image.asset("assets/images/logo_login.png", width: 110, height: 110),
+            Image.asset("assets/images/logo_login.png", width: 110, height: 110, errorBuilder: (c,e,s) => Container(width: 100, height: 100, decoration: BoxDecoration(color: Colors.amber.shade700, shape: BoxShape.circle), child: const Center(child: Text("D", style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold))))),
             const SizedBox(height: 30),
             _isAdminStage2 ? _buildAdminStage2() : _buildLoginForm(),
           ],
