@@ -8,7 +8,11 @@ import 'screens/login/login_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase init gagal, lanjut tanpa Firebase: $e');
+  }
   runApp(DlovidApp());
 }
 
