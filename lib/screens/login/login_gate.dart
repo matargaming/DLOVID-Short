@@ -26,32 +26,39 @@ class _LoginGateState extends State<LoginGate> {
   static const String referralAdminKey = "DVS0000";
   static const String referralOwner = "DLOVID-OWNER-001";
 
-  InputDecoration _dec(String hint, {Widget? suffix}) => InputDecoration(
-    hintText: hint, hintStyle: const TextStyle(color: Colors.white54),
-    filled: true, fillColor: const Color(0xFF1A1A1A),
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-    suffixIcon: suffix,
-  );
+  InputDecoration _dec(String hint, {Widget? suffix}) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.white54),
+      filled: true,
+      fillColor: const Color(0xFF1A1A1A),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      suffixIcon: suffix,
+    );
+  }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red[700]));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red.shade700));
   }
 
   void _kirimOtp() {
-    final email = _email.text.trim();
-    if (email.isEmpty) { _showError("Isi Email/No HP dulu buat kirim OTP"); return; }
+    if (_email.text.trim().isEmpty) {
+      _showError("Isi Email/No HP dulu");
+      return;
+    }
     final rand = Random();
     _generatedOtp = (100000 + rand.nextInt(900000)).toString();
-    // Simulasi konek Gmail admin - di production ganti pakai Firebase Auth / API Email
-    debugPrint("OTP untuk $email dikirim ke Gmail admin $adminEmail : $_generatedOtp");
+    debugPrint("OTP $_generatedOtp konek Gmail admin $adminEmail");
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("OTP terkirim ke $adminEmail (konek Gmail admin): $_generatedOtp"), backgroundColor: Colors.green[700], duration: const Duration(seconds: 5)),
+      SnackBar(content: Text("OTP terkirim konek Gmail admin: $_generatedOtp"), backgroundColor: Colors.green.shade700, duration: const Duration(seconds: 5)),
     );
-    setState(() { _otp.text = _generatedOtp; }); // auto isi buat testing, nanti hapus baris ini kalau mau manual
+    setState(() {
+      _otp.text = _generatedOtp;
+    });
   }
 
   void _prosesLogin() {
-    _showError("Rangka ini login user belum dibuka. Daftar dulu");
+    _showError("Rangka: Login user belum dibuka. Daftar dulu");
   }
 
   void _prosesDaftar() {
@@ -62,31 +69,95 @@ class _LoginGateState extends State<LoginGate> {
     final otp = _otp.text.trim();
 
     if (ref.isEmpty) { _showError("Tanpa referral ditolak"); return; }
-    if (email.isEmpty || sandi.isEmpty || confirm.isEmpty || otp.isEmpty) { _showError("Semua field wajib"); return; }
-    if (sandi!= confirm) { _showError("Confirm tidak sama"); return; }
-
-    // Validasi OTP konek Gmail admin
-    if (_generatedOtp.isEmpty) { _showError("Klik Kirim OTP dulu - OTP konek Gmail admin"); return; }
-    if (otp!= _generatedOtp) { _showError("OTP salah - cek Gmail admin $adminEmail"); return; }
+    if (email.isEmpty || sandi.isEmpty || confirm.isEmpty || otp.isEmpty) { _showError("Semua wajib isi"); return; }
+    if (sandi != confirm) { _showError("Confirm tidak sama"); return; }
+    if (_generatedOtp.isEmpty) { _showError("Klik Kirim OTP dulu"); return; }
+    if (otp != _generatedOtp) { _showError("OTP salah"); return; }
 
     if (email == adminEmail && ref == referralAdminKey) {
-      if (sandi!= adminPass1) { _showError("Sandi 1 admin salah"); return; }
-      setState(() => _isAdminStage2 = true);
+      if (sandi != adminPass1) { _showError("Sandi 1 salah"); return; }
+      setState(() { _isAdminStage2 = true; });
       return;
     }
 
-    if (ref!= referralOwner && ref!= referralAdminKey &&!ref.startsWith("DLOVID-")) {
-      _showError("Referral tidak valid"); return;
+    if (ref != referralOwner && ref != referralAdminKey && !ref.startsWith("DLOVID-")) {
+      _showError("Referral tidak valid");
+      return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Daftar sukses"), backgroundColor: Colors.green));
-    setState(() => _isDaftar = false);
+    setState(() { _isDaftar = false; });
   }
 
   void _prosesAdminStage2() {
-    if (_p2.text.trim()!= adminPass2) { _showError("Sandi 2 salah"); return; }
-    if (_p3.text.trim()!= adminPass3) { _showError("Sandi 3 salah"); return; }
+    if (_p2.text.trim() != adminPass2) { _showError("Sandi 2 salah"); return; }
+    if (_p3.text.trim() != adminPass3) { _showError("Sandi 3 salah"); return; }
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainNav()));
+  }
+
+  Widget _buildLoginForm() {
+    return Column(
+      children: [
+        TextField(controller: _email, style: const TextStyle(color: Colors.white), decoration: _dec("Email / No HP")),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _pass,
+          obscureText: _ob1,
+          style: const TextStyle(color: Colors.white),
+          decoration: _dec("Sandi", suffix: IconButton(icon: Icon(_ob1 ? Icons.visibility_off : Icons.visibility, color: Colors.amber), onPressed: () { setState(() { _ob1 = !_ob1; }); })),
+        ),
+        const SizedBox(height: 12),
+        if (_isDaftar)
+          Column(
+            children: [
+              TextField(
+                controller: _confirm,
+                obscureText: _ob2,
+                style: const TextStyle(color: Colors.white),
+                decoration: _dec("Confirm Sandi", suffix: IconButton(icon: Icon(_ob2 ? Icons.visibility_off : Icons.visibility, color: Colors.amber), onPressed: () { setState(() { _ob2 = !_ob2; }); })),
+              ),
+              const SizedBox(height: 12),
+              TextField(controller: _ref, style: const TextStyle(color: Colors.white), decoration: _dec("Kode Referral Wajib")),
+              const SizedBox(height: 12),
+              TextField(controller: _otp, style: const TextStyle(color: Colors.white), decoration: _dec("OTP via HP/Email")),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade700), onPressed: _kirimOtp, child: const Text("Kirim OTP", style: TextStyle(color: Colors.black))),
+              ),
+              const SizedBox(height: 4),
+              const Text("OTP konek ke Gmail admin", style: TextStyle(color: Colors.white24, fontSize: 10)),
+              const SizedBox(height: 12),
+            ],
+          ),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade700, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
+            onPressed: () { if (_isDaftar) { _prosesDaftar(); } else { _prosesLogin(); } },
+            child: Text(_isDaftar ? "DAFTAR" : "LOGIN", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          ),
+        ),
+        TextButton(onPressed: () { setState(() { _isDaftar = !_isDaftar; }); }, child: Text(_isDaftar ? "Sudah punya akun? Login" : "Pengguna baru? Daftar isi kode referral", style: const TextStyle(color: Colors.amber))),
+      ],
+    );
+  }
+
+  Widget _buildAdminStage2() {
+    return Column(
+      children: [
+        const Text("LOGIN ADMIN TAHAP 2", style: TextStyle(color: Colors.amber, fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 20),
+        TextField(controller: _p2, obscureText: true, style: const TextStyle(color: Colors.white), decoration: _dec("Sandi 2")),
+        const SizedBox(height: 12),
+        TextField(controller: _p3, obscureText: true, style: const TextStyle(color: Colors.white), decoration: _dec("Sandi 3")),
+        const SizedBox(height: 20),
+        SizedBox(width: double.infinity, height: 50, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade700, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))), onPressed: _prosesAdminStage2, child: const Text("MASUK PANEL ADMIN", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)))),
+        TextButton(onPressed: () { setState(() { _isAdminStage2 = false; }); }, child: const Text("Kembali", style: TextStyle(color: Colors.white54))),
+      ],
+    );
   }
 
   @override
@@ -98,41 +169,9 @@ class _LoginGateState extends State<LoginGate> {
         child: Column(
           children: [
             const SizedBox(height: 60),
-            Image.asset("assets/images/logo_login.png", width: 110, height: 110, errorBuilder: (c,e,s)=> Container(width: 100, height: 100, decoration: BoxDecoration(color: Colors.amber[700], shape: BoxShape.circle), child: const Center(child: Text("D", style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold)))))),
+            Image.asset("assets/images/logo_login.png", width: 110, height: 110),
             const SizedBox(height: 30),
-            if (!_isAdminStage2)...[
-              TextField(controller: _email, style: const TextStyle(color: Colors.white), decoration: _dec("Email / No HP")),
-              const SizedBox(height: 12),
-              TextField(controller: _pass, obscureText: _ob1, style: const TextStyle(color: Colors.white), decoration: _dec("Sandi", suffix: IconButton(icon: Icon(_ob1? Icons.visibility_off: Icons.visibility, color: Colors.amber), onPressed: ()=> setState(()=> _ob1 =!_ob1)))),
-              const SizedBox(height: 12),
-              if (_isDaftar)...[
-                TextField(controller: _confirm, obscureText: _ob2, style: const TextStyle(color: Colors.white), decoration: _dec("Confirm Sandi", suffix: IconButton(icon: Icon(_ob2? Icons.visibility_off: Icons.visibility, color: Colors.amber), onPressed: ()=> setState(()=> _ob2 =!_ob2)))),
-                const SizedBox(height: 12),
-                TextField(controller: _ref, style: const TextStyle(color: Colors.white), decoration: _dec("Kode Referral Wajib")),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(child: TextField(controller: _otp, style: const TextStyle(color: Colors.white), decoration: _dec("OTP via HP/Email"))),
-                    const SizedBox(width: 8),
-                    ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700]), onPressed: _kirimOtp, child: const Text("Kirim OTP", style: TextStyle(color: Colors.black, fontSize: 12))),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                const Text("OTP konek ke Gmail admin", style: TextStyle(color: Colors.white24, fontSize: 10)),
-                const SizedBox(height: 12),
-              ],
-              const SizedBox(height: 20),
-              SizedBox(width: double.infinity, height: 50, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))), onPressed: ()=> _isDaftar? _prosesDaftar() : _prosesLogin(), child: Text(_isDaftar? "DAFTAR" : "LOGIN", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)))),
-              TextButton(onPressed: ()=> setState(()=> _isDaftar =!_isDaftar), child: Text(_isDaftar? "Sudah punya akun? Login" : "Pengguna baru? Daftar isi kode referral", style: const TextStyle(color: Colors.amber))),
-            ] else...[
-              const Text("LOGIN ADMIN TAHAP 2", style: TextStyle(color: Colors.amber, fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 20),
-              TextField(controller: _p2, obscureText: true, style: const TextStyle(color: Colors.white), decoration: _dec("Sandi 2")),
-              const SizedBox(height: 12),
-              TextField(controller: _p3, obscureText: true, style: const TextStyle(color: Colors.white), decoration: _dec("Sandi 3")),
-              const SizedBox(height: 20),
-              SizedBox(width: double.infinity, height: 50, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))), onPressed: _prosesAdminStage2, child: const Text("MASUK PANEL ADMIN", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)))),
-            ]
+            _isAdminStage2 ? _buildAdminStage2() : _buildLoginForm(),
           ],
         ),
       ),
