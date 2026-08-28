@@ -1,24 +1,30 @@
 name: Build Universal APK & AAB PlayStore
-
 on:
   push:
     branches: [ main, master ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
-
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.0'
           channel: 'stable'
+
+      - name: Fix Launcher Icon from assets/icon
+        run: |
+          echo "Copying icon from assets/icon/app_icon.png to mipmap..."
+          for d in hdpi mdpi xhdpi xxhdpi xxxhdpi; do
+            mkdir -p android/app/src/main/res/mipmap-$d
+            cp assets/icon/app_icon.png android/app/src/main/res/mipmap-$d/launcher_icon.png || true
+            cp assets/icon/app_icon.png android/app/src/main/res/mipmap-$d/ic_launcher.png || true
+          done
+          ls -lh android/app/src/main/res/mipmap-hdpi/
 
       - name: Decode google-services.json
         env:
@@ -30,7 +36,6 @@ jobs:
           else
             printf '%s' "$GOOGLE_JSON" | base64 --decode > android/app/google-services.json
           fi
-          ls -lh android/app/google-services.json
 
       - name: Pub get
         run: flutter pub get
@@ -61,5 +66,4 @@ jobs:
           name: dlovid-universal
           path: |
             build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab            build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/bundle/release/app-release.aab
