@@ -14,8 +14,18 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.6'
+          channel: 'stable'
       - name: Decode google-services.json
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > /tmp/g.json
+          if cat /tmp/g.json | base64 --decode > android/app/google-services.json 2>/dev/null; then
+            echo "Decoded from base64"
+          else
+            cp /tmp/g.json android/app/google-services.json
+            echo "Copied raw JSON"
+          fi
+      - name: Flutter pub get
+        run: flutter pub get
       - name: Build APK
         run: |
           flutter build apk --release --dart-define=TMDB_API_KEY=${{ secrets.TMDB_API_KEY }} --dart-define=AGORA_APP_ID=${{ secrets.AGORA_APP_ID }} --dart-define=ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }} --dart-define=ADMOB_BANNER_ID=${{ secrets.ADMOB_BANNER_ID }} --dart-define=ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }} --dart-define=MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }} --dart-define=MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }}
