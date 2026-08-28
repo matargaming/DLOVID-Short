@@ -5,7 +5,10 @@ import 'screens/akun_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/login/login_gate.dart';
 
-void main() => runApp(DlovidApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(DlovidApp());
+}
 
 class DlovidApp extends StatelessWidget {
   @override
