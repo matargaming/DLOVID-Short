@@ -1,57 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'screens/saran_screen.dart';
-import 'screens/bonus_screen.dart';
-import 'screens/akun_screen.dart';
-import 'screens/home_screen.dart';
 import 'screens/login/login_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint('Firebase init gagal, lanjut tanpa Firebase: $e');
-  }
-  runApp(DlovidApp());
+  await Firebase.initializeApp();
+  runApp(const DLOVIDApp());
 }
 
-class DlovidApp extends StatelessWidget {
+class DLOVIDApp extends StatelessWidget {
+  const DLOVIDApp({super.key});
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginGate(),
-    );
-  }
-}
-
-class MainNav extends StatefulWidget {
-  @override
-  _MainNavState createState() => _MainNavState();
-}
-
-class _MainNavState extends State<MainNav> {
-  int _index = 0;
-  final _pages = [SaranScreen(), HomeScreen(), BonusScreen(), AkunScreen()];
-  @override
-  Widget build(BuildContext context){
-    return Scaffold(
-      body: _pages[_index],
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.amber,
-        unselectedItemColor: Colors.white54,
-        currentIndex: _index,
-        onTap: (i)=> setState(()=> _index=i),
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.recommend), label: "Saran"),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard), label: "Bonus"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Akun"),
-        ],
+      title: 'DLOVID Short',
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: Colors.black,
+        primaryColor: Colors.amber.shade700,
       ),
+      home: const LoginGate(), // Langsung ke Login 3 Sandi + OTP
     );
   }
 }
