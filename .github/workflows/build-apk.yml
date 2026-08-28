@@ -1,67 +1,26 @@
-name: Build Universal APK & AAB PlayStore
+name: Build APK
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '17'
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
-          channel: 'stable'
-
-      - name: Fix Launcher Icon from assets/icon
-        run: |
-          for d in hdpi mdpi xhdpi xxhdpi xxxhdpi; do
-            mkdir -p android/app/src/main/res/mipmap-$d
-            cp assets/icon/app_icon.png android/app/src/main/res/mipmap-$d/launcher_icon.png || true
-            cp assets/icon/app_icon.png android/app/src/main/res/mipmap-$d/ic_launcher.png || true
-          done
-
+          flutter-version: '3.19.6'
       - name: Decode google-services.json
-        env:
-          GOOGLE_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/google-services.json
+      - name: Build APK
         run: |
-          mkdir -p android/app
-          if echo "$GOOGLE_JSON" | grep -q "project_info"; then
-            printf '%s' "$GOOGLE_JSON" > android/app/google-services.json
-          else
-            printf '%s' "$GOOGLE_JSON" | base64 --decode > android/app/google-services.json
-          fi
-
-      - name: Pub get
-        run: flutter pub get
-
-      - name: Build APK Universal
-        run: |
-          flutter build apk --release \
-            --dart-define=TMDB_API_KEY=${{ secrets.TMDB_API_KEY }} \
-            --dart-define=MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }} \
-            --dart-define=MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }} \
-            --dart-define=ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }} \
-            --dart-define=ADMOB_BANNER_ID=${{ secrets.ADMOB_BANNER_ID }} \
-            --dart-define=ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }}
-
-      - name: Build AAB Play Store
-        run: |
-          flutter build appbundle --release \
-            --dart-define=TMDB_API_KEY=${{ secrets.TMDB_API_KEY }} \
-            --dart-define=MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }} \
-            --dart-define=MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }} \
-            --dart-define=ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }} \
-            --dart-define=ADMOB_BANNER_ID=${{ secrets.ADMOB_BANNER_ID }} \
-            --dart-define=ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }}
-
-      - name: Upload APK & AAB
-        uses: actions/upload-artifact@v4
+          flutter build apk --release --dart-define=TMDB_API_KEY=${{ secrets.TMDB_API_KEY }} --dart-define=AGORA_APP_ID=${{ secrets.AGORA_APP_ID }} --dart-define=ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }} --dart-define=ADMOB_BANNER_ID=${{ secrets.ADMOB_BANNER_ID }} --dart-define=ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }} --dart-define=MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }} --dart-define=MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }}
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
         with:
-          name: dlovid-universal
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
+          name: dlovid-release
+          path: build/app/outputs/flutter-apk/app-release.apk
