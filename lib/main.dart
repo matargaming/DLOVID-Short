@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'screens/login/login_gate.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+void main() {
   runApp(const DLOVIDApp());
 }
 
@@ -30,14 +27,20 @@ class _SplashToLoginState extends State<SplashToLogin> {
   void initState(){
     super.initState();
     Future.delayed(const Duration(seconds: 2), (){
-      if(mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginGate()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginGate()));
     });
   }
   @override
   Widget build(BuildContext context){
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(child: Image.asset('assets/icon/icon.png', width: 250)),
+      body: Center(
+        child: Container(
+          width: 200, height: 200,
+          decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(30)),
+          child: const Center(child: Text("D", style: TextStyle(color: Color(0xFFD4AF37), fontSize: 120, fontWeight: FontWeight.bold))),
+        ),
+      ),
     );
   }
 }
