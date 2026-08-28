@@ -17,7 +17,7 @@ class DlovidApp extends StatelessWidget {
   Widget build(BuildContext context){
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginGate(), // Balik ke LoginGate lagi, Firebase udah di-init!
+      home: LoginGate(),
     );
   }
 }
