@@ -1,30 +1,43 @@
 import 'package:flutter/material.dart';
-import '../drama/drama_screen.dart';
 import '../home/feed_screen.dart';
+import '../drama/drama_screen.dart';
+import '../live/live_screen.dart';
 import '../chat/chat_screen.dart';
 import '../profile/profile_screen.dart';
-import '../create/create_option_sheet.dart';
+
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
   @override
-  State<MainNavigation> createState()=> _MainNavigationState();
+  _MainNavigationState createState() => _MainNavigationState();
 }
-class _MainNavigationState extends State<MainNavigation>{
-  int idx=0;
-  final pages = [const DramaScreen(), const FeedScreen(), const SizedBox(), const ChatScreen(), const ProfileScreen()];
+
+class _MainNavigationState extends State<MainNavigation> {
+  int _currentIndex = 0;
+
+  final pages = [
+    FeedScreen(),
+    DramaScreen(),
+    LiveScreen(), // Paket 30rb langsung aktif disini Bos!
+    ChatScreen(),
+    ProfileScreen(),
+  ];
+
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: pages[idx==2?0:idx],
+      body: pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: idx, backgroundColor: Colors.black, selectedItemColor: Colors.amber, unselectedItemColor: Colors.grey, type: BottomNavigationBarType.fixed,
-        onTap: (i){ if(i==2){ showModalBottomSheet(context: context, builder: (_)=> const CreateOptionSheet()); return; } setState(()=> idx=i); },
-        items: const [
+        currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.black,
+        selectedItemColor: Colors.amber,
+        unselectedItemColor: Colors.white54,
+        onTap: (i) => setState(() => _currentIndex = i),
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.movie), label: 'Drama'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.add_box, size: 35), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Pesan'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Akun'),
+          BottomNavigationBarItem(icon: Icon(Icons.live_tv, color: Colors.red), label: 'Live'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),
     );
