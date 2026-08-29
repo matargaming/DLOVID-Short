@@ -15,7 +15,7 @@ class DLOVIDApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'DLOVID-Short',
+      title: 'DLOVID-Short Universal',
       theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.black),
       home: const LoginScreen(),
       routes: {
