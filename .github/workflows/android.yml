@@ -19,15 +19,12 @@ jobs:
         run: |
           echo "$JSON_CONTENT" > android/app/google-services.json
 
-      - name: Fix gradle-wrapper.jar
-        run: |
-          curl -L -o android/gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.5.0/gradle/wrapper/gradle-wrapper.jar
-          ls -lh android/gradle/wrapper/
-
-      - name: Setup Gradle
+      - name: Setup Gradle 8.5
         uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.5
 
-      - name: Build APK REAL
+      - name: Fix & Build APK REAL
         env:
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           ADMIN_KEY_1: ${{ secrets.ADMIN_KEY_1 }}
@@ -44,6 +41,8 @@ jobs:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
         run: |
           cd android
+          rm -rf gradle/wrapper/gradle-wrapper.jar
+          gradle wrapper --gradle-version 8.5
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace
 
