@@ -1,5 +1,5 @@
 name: dlovid_short
-description: Drama gold - DLOVID Short
+description: Drama gold - DLOVID Short - Universal Android & Tablet
 publish_to: 'none'
 version: 1.0.0+1
 environment:
@@ -23,6 +23,7 @@ dependencies:
   intl: ^0.19.0
   pin_code_fields: ^8.0.1
   provider: ^6.1.1
+  responsive_builder: ^0.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -39,5 +40,3 @@ flutter_launcher_icons:
   ios: false
   image_path: "assets/logo_apk.png"
   min_sdk_android: 21
-  web:
-    generate: false
