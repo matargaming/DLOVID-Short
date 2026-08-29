@@ -16,12 +16,11 @@ jobs:
           flutter-version: '3.22.0'
           channel: 'stable'
 
-      - name: Create Android Folder If Missing
+      - name: FIX GRADLE - Recreate Android Project
         run: |
-          if [ ! -f "android/app/src/main/AndroidManifest.xml" ]; then
-            echo "Android folder missing, creating..."
-            flutter create . --platforms=android --project-name dlovid_short --org com.matargaming.dlovid
-          fi
+          echo "Fixing unsupported Gradle..."
+          rm -rf android
+          flutter create . --platforms=android --project-name dlovid_short --org com.matargaming.dlovid --overwrite
           ls -la android/app/src/main/
 
       - name: Setup Firebase
@@ -30,16 +29,13 @@ jobs:
           if [ -n "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
             echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > /tmp/gs.txt
             if base64 -d /tmp/gs.txt > android/app/google-services.json 2>/dev/null; then
-              echo "Firebase OK base64"
+              echo "Firebase OK"
             else
               cp /tmp/gs.txt android/app/google-services.json
-              echo "Firebase OK plain"
             fi
-          else
-            echo "No Firebase secret, skip"
           fi
 
-      - name: Create .env from Secrets
+      - name: Create .env from Secrets Legal
         run: |
           echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
           echo "AGORA_APP_ID=${{ secrets.AGORA_APP_ID }}" >> .env
@@ -48,26 +44,15 @@ jobs:
           echo "ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }}" >> .env
           echo "MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }}" >> .env
           echo "MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }}" >> .env
-          echo "LIVE_COMMISSION=0.3" >> .env
-          echo "CREATOR_COMMISSION=0.7" >> .env
 
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Generate Gold Icon (Safe Mode)
-        continue-on-error: true
-        run: |
-          if [ -f "android/app/src/main/AndroidManifest.xml" ]; then
-            flutter pub run flutter_launcher_icons || echo "Icon skip, lanjut build"
-          else
-            echo "AndroidManifest not found, skip icon"
-          fi
+      - name: Build APK LEGAL - Lebih Bagus Dari TikTok
+        run: flutter build apk --release --split-per-abi --no-tree-shake-icons
 
-      - name: Build APK Split Legal Gold
-        run: flutter build apk --release --split-per-abi
-
-      - name: Upload DLOVID APK GOLD LEGAL
+      - name: Upload DLOVID APK GOLD LEGAL HIJAU
         uses: actions/upload-artifact@v4
         with:
-          name: DLOVID-GOLD-LEGAL-HIJAU
+          name: DLOVID-GOLD-LEGAL-FINAL
           path: build/app/outputs/flutter-apk/app-*-release.apk
