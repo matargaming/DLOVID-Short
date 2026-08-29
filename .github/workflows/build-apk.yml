@@ -15,6 +15,13 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: 'stable'
+
+      - name: Create Android Project Jika Belum Ada
+        run: |
+          if [ ! -d "android" ]; then
+            flutter create . --platforms=android --project-name dlovid_short
+          fi
+
       - name: Setup google-services.json
         run: |
           mkdir -p android/app
@@ -24,6 +31,7 @@ jobs:
           else
             cp /tmp/gs.txt android/app/google-services.json
           fi
+
       - name: Create env
         run: |
           echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
@@ -33,18 +41,16 @@ jobs:
           echo "ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }}" >> .env
           echo "MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }}" >> .env
           echo "MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }}" >> .env
+
       - name: Get dependencies
         run: flutter pub get
+
       - name: Generate Icon Gold dari assets/icon/app_icon.png
-        run: |
-          if [ -f "assets/icon/app_icon.png" ]; then
-            flutter pub run flutter_launcher_icons
-          else
-            echo "app_icon.png tidak ada!"
-            ls assets/icon/
-          fi
+        run: flutter pub run flutter_launcher_icons
+
       - name: Build APK SPLIT Kecil
         run: flutter build apk --release --split-per-abi
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
