@@ -5,12 +5,8 @@ import 'screens/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // SERVER 14 SECRETS - JANGAN OFFLINE
   await dotenv.load(fileName: ".env");
-  
   await Firebase.initializeApp();
-  
   runApp(const DlovidShortApp());
 }
 
