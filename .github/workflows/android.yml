@@ -18,7 +18,6 @@ jobs:
           JSON_CONTENT: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
           echo "$JSON_CONTENT" > android/app/google-services.json
-          cat android/app/google-services.json
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -40,8 +39,7 @@ jobs:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
         run: |
           cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
+          gradle assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
