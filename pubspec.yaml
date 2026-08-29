@@ -2,10 +2,8 @@ name: dlovid_short
 description: Drama gold - DLOVID Short - Universal Android & Tablet
 publish_to: 'none'
 version: 1.0.0+2001
-
 environment:
   sdk: '>=3.2.0 <4.0.0'
-
 dependencies:
   flutter:
     sdk: flutter
@@ -27,27 +25,20 @@ dependencies:
   provider: ^6.1.1
   responsive_builder: ^0.7.0
   flutter_dotenv: ^5.1.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.13.1
-
 flutter:
   uses-material-design: true
   assets:
-    - assets/logo_apk.png
-    - assets/logo_login.png
-    - assets/
-
+    - assets/icon/
+    - assets/images/
+    - assets/icon/app_icon.png
+    - assets/images/logo_login.png
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: false
-  image_path: "assets/logo_apk.png"
+  image_path: "assets/icon/app_icon.png"
   min_sdk_android: 21
-  web:
-    generate: true
-    image_path: "assets/logo_apk.png"
-    background_color: "#000000"
-    theme_color: "#FFD700"
