@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.dlovids.short"
+    namespace = "com.dlovid.dlovids"
     compileSdk = 34
     defaultConfig {
         applicationId = "com.dlovid.dlovids"
