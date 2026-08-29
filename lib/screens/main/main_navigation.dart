@@ -6,17 +6,17 @@ import '../chat/chat_screen.dart';
 import '../profile/profile_screen.dart';
 
 class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
   @override
-  _MainNavigationState createState() => _MainNavigationState();
+  State<MainNavigation> createState() => _MainNavigationState();
 }
 
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
-
-  final pages = [
+  final List<Widget> pages = [
     FeedScreen(),
     DramaScreen(),
-    LiveScreen(), // Paket 30rb langsung aktif disini Bos!
+    LiveScreen(),
     ChatScreen(),
     ProfileScreen(),
   ];
@@ -32,7 +32,7 @@ class _MainNavigationState extends State<MainNavigation> {
         selectedItemColor: Colors.amber,
         unselectedItemColor: Colors.white54,
         onTap: (i) => setState(() => _currentIndex = i),
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.movie), label: 'Drama'),
           BottomNavigationBarItem(icon: Icon(Icons.live_tv, color: Colors.red), label: 'Live'),
