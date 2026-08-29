@@ -1,44 +1,42 @@
-name: Build DLOVID 100% ONLINE FINAL
-on:
-  push:
-    branches: [ main ]
+name: Build DLOVID-Short Universal
+
+on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v5
-        with: { distribution: 'zulu', java-version: '17' }
-      - uses: subosito/flutter-action@v2
-        with: { flutter-version: '3.22.0' }
-
-      - name: Recreate Android
-        run: rm -rf android && flutter create . --platforms=android --project-name dlovid_short --org com.matargaming.dlovid --overwrite
-
-      - name: Setup Firebase & .env FULL 8 SECRETS
-        run: |
-          mkdir -p android/app
-          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json 2>/dev/null || echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json
-          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
-          echo "AGORA_APP_ID=${{ secrets.AGORA_APP_ID }}" >> .env
-          echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" >> .env
-          echo "ADMOB_BANNER_ID=${{ secrets.ADMOB_BANNER_ID }}" >> .env
-          echo "ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }}" >> .env
-          echo "MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }}" >> .env
-          echo "MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }}" >> .env
-          cat .env
-
-      - name: Pub Get
-        run: flutter pub get
-
-      - name: Generate Icon Gold
-        run: flutter pub run flutter_launcher_icons
-
-      - name: Build APK 100% Online
-        run: flutter build apk --release --split-per-abi --obfuscate --split-debug-info=./symbols --tree-shake-icons
-
-      - name: Upload APK ONLINE
-        uses: actions/upload-artifact@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
         with:
-          name: DLOVID-100-PERCENT-ONLINE-READY
-          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+
+      - name: Create env file from Secrets
+        run: |
+          echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" >>.env
+          echo "ADMOB_BANNER_ID=${{ secrets.ADMOB_BANNER_ID }}" >>.env
+          echo "ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }}" >>.env
+          echo "AGORA_APP_ID=${{ secrets.AGORA_APP_ID }}" >>.env
+          echo "AGORA_CERT=${{ secrets.AGORA_APP_CERTIFICATE }}" >>.env
+          echo "FIREBASE_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >>.env
+          echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >>.env
+          echo "ADMIN_KEY_1=${{ secrets.ADMIN_KEY_1 }}" >>.env
+          echo "ADMIN_KEY_2=${{ secrets.ADMIN_KEY_2 }}" >>.env
+          echo "ADMIN_KEY_3=${{ secrets.ADMIN_KEY_3 }}" >>.env
+          echo "TMDB_KEY=${{ secrets.TMDB_API_KEY }}" >>.env
+          echo "MIDTRANS_CLIENT=${{ secrets.MIDTRANS_CLIENT_KEY }}" >>.env
+          echo "MIDTRANS_SERVER=${{ secrets.MIDTRANS_SERVER_KEY }}" >>.env
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/google-services.json
+
+      - name: Build Universal APK
+        run: flutter build apk --release --split-per-abi
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: DLOVID-Short-Universal
+          path: build/app/outputs/flutter-apk/*.apk
