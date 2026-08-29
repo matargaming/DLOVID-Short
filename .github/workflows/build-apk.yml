@@ -1,4 +1,4 @@
-name: Build DLOVID Gold Production
+name: Build DLOVID Gold Legal
 on:
   push:
     branches: [ main ]
@@ -15,21 +15,28 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: 'stable'
-      
-      - name: Create Android Project
+
+      - name: Create Android Folder If Missing
         run: |
-          if [ ! -d "android" ]; then
-            flutter create . --platforms=android --project-name dlovid_short
+          if [ ! -f "android/app/src/main/AndroidManifest.xml" ]; then
+            echo "Android folder missing, creating..."
+            flutter create . --platforms=android --project-name dlovid_short --org com.matargaming.dlovid
           fi
+          ls -la android/app/src/main/
 
       - name: Setup Firebase
         run: |
           mkdir -p android/app
-          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > /tmp/gs.txt
-          if base64 -d /tmp/gs.txt > android/app/google-services.json 2>/dev/null; then
-            echo "Firebase OK"
+          if [ -n "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
+            echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > /tmp/gs.txt
+            if base64 -d /tmp/gs.txt > android/app/google-services.json 2>/dev/null; then
+              echo "Firebase OK base64"
+            else
+              cp /tmp/gs.txt android/app/google-services.json
+              echo "Firebase OK plain"
+            fi
           else
-            cp /tmp/gs.txt android/app/google-services.json
+            echo "No Firebase secret, skip"
           fi
 
       - name: Create .env from Secrets
@@ -47,14 +54,20 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Generate Gold Icon
-        run: flutter pub run flutter_launcher_icons
+      - name: Generate Gold Icon (Safe Mode)
+        continue-on-error: true
+        run: |
+          if [ -f "android/app/src/main/AndroidManifest.xml" ]; then
+            flutter pub run flutter_launcher_icons || echo "Icon skip, lanjut build"
+          else
+            echo "AndroidManifest not found, skip icon"
+          fi
 
-      - name: Build APK Split (Lebih Bagus Dari TikTok Version)
-        run: flutter build apk --release --split-per-abi --obfuscate --split-debug-info=./
+      - name: Build APK Split Legal Gold
+        run: flutter build apk --release --split-per-abi
 
-      - name: Upload DLOVID APK GOLD
+      - name: Upload DLOVID APK GOLD LEGAL
         uses: actions/upload-artifact@v4
         with:
-          name: DLOVID-GOLD-LEBIH-BAGUS-DARI-TIKTOK
+          name: DLOVID-GOLD-LEGAL-HIJAU
           path: build/app/outputs/flutter-apk/app-*-release.apk
