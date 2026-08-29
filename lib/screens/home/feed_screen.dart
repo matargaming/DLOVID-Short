@@ -1,2 +1,31 @@
 import 'package:flutter/material.dart';
-class FeedScreen extends StatelessWidget{ const FeedScreen({super.key}); @override Widget build(BuildContext context){ return PageView.builder(scrollDirection: Axis.vertical, itemCount: 10, itemBuilder: (c,i)=> Stack(children: [Container(color: Colors.grey[900], child: Center(child: Text('Video User ${i+1}'))), if(i%3==0) Positioned(top: 50, left: 16, child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4)), child: const Text('LIVE')))), const Positioned(bottom: 20, left: 16, child: Text('@user • 1.2K likes'))]));}}
+
+class FeedScreen extends StatelessWidget {
+  const FeedScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      scrollDirection: Axis.vertical,
+      itemCount: 10,
+      itemBuilder: (c, i) => Stack(
+        children: [
+          Container(
+            color: Colors.grey[900],
+            child: Center(child: Text('Video User ${i+1}', style: const TextStyle(fontSize: 20))),
+          ),
+          if (i % 3 == 0)
+            Positioned(
+              top: 50,
+              left: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4)),
+                child: const Text('LIVE', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ),
+          const Positioned(bottom: 80, left: 16, child: Text('@user • 1.2K likes')),
+        ],
+      ),
+    );
+  }
+}
