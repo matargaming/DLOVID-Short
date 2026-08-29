@@ -1,4 +1,4 @@
-name: Build DLOVID Gold Legal
+name: Build DLOVID 100% ONLINE FINAL
 on:
   push:
     branches: [ main ]
@@ -8,29 +8,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v5
-        with:
-          distribution: 'zulu'
-          java-version: '17'
+        with: { distribution: 'zulu', java-version: '17' }
       - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.22.0'
-          channel: 'stable'
+        with: { flutter-version: '3.22.0' }
 
-      - name: FIX GRADLE - Recreate Android Project
-        run: |
-          rm -rf android
-          flutter create . --platforms=android --project-name dlovid_short --org com.matargaming.dlovid --overwrite
+      - name: Recreate Android
+        run: rm -rf android && flutter create . --platforms=android --project-name dlovid_short --org com.matargaming.dlovid --overwrite
 
-      - name: Setup Firebase
+      - name: Setup Firebase & .env FULL 8 SECRETS
         run: |
           mkdir -p android/app
-          if [ -n "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
-            echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > /tmp/gs.txt
-            base64 -d /tmp/gs.txt > android/app/google-services.json 2>/dev/null || cp /tmp/gs.txt android/app/google-services.json
-          fi
-
-      - name: Create .env from Secrets Legal
-        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json 2>/dev/null || echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json
           echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
           echo "AGORA_APP_ID=${{ secrets.AGORA_APP_ID }}" >> .env
           echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" >> .env
@@ -38,25 +26,19 @@ jobs:
           echo "ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }}" >> .env
           echo "MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }}" >> .env
           echo "MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }}" >> .env
+          cat .env
 
-      - name: Get Dependencies
+      - name: Pub Get
         run: flutter pub get
 
-      - name: Generate Icon From Asset
-        run: |
-          ICON=$(find assets -name "*.png" | head -1)
-          echo "Icon: $ICON"
-          echo "flutter_icons:" > flutter_launcher_icons.yaml
-          echo "  android: true" >> flutter_launcher_icons.yaml
-          echo "  ios: true" >> flutter_launcher_icons.yaml
-          echo "  image_path: \"$ICON\"" >> flutter_launcher_icons.yaml
-          flutter pub run flutter_launcher_icons -f flutter_launcher_icons.yaml
+      - name: Generate Icon Gold
+        run: flutter pub run flutter_launcher_icons
 
-      - name: Build APK LEGAL - Lebih Bagus Dari TikTok
-        run: flutter build apk --release --split-per-abi --no-tree-shake-icons
+      - name: Build APK 100% Online
+        run: flutter build apk --release --split-per-abi --obfuscate --split-debug-info=./symbols --tree-shake-icons
 
-      - name: Upload DLOVID APK GOLD LEGAL HIJAU
+      - name: Upload APK ONLINE
         uses: actions/upload-artifact@v4
         with:
-          name: DLOVID-GOLD-LEGAL-FINAL
-          path: build/app/outputs/flutter-apk/app-*-release.apk
+          name: DLOVID-100-PERCENT-ONLINE-READY
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
