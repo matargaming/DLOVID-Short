@@ -1,0 +1,29 @@
+name: Build APK
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { java-version: '17', distribution: 'temurin' }
+      - name: Decode google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+      - name: Build APK
+        env:
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_KEY_1: ${{ secrets.ADMIN_KEY_1 }}
+          ADMIN_KEY_2: ${{ secrets.ADMIN_KEY_2 }}
+          ADMIN_KEY_3: ${{ secrets.ADMIN_KEY_3 }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
+          ADMOB_BANNER_ID: ${{ secrets.ADMOB_BANNER_ID }}
+          ADMOB_INTER_ID: ${{ secrets.ADMOB_INTER_ID }}
+          AGORA_APP_ID: ${{ secrets.AGORA_APP_ID }}
+          AGORA_APP_CERTIFICATE: ${{ secrets.AGORA_APP_CERTIFICATE }}
+          MIDTRANS_CLIENT_KEY: ${{ secrets.MIDTRANS_CLIENT_KEY }}
+          MIDTRANS_SERVER_KEY: ${{ secrets.MIDTRANS_SERVER_KEY }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: cd android &&./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with: { name: APK, path: android/app/build/outputs/apk/debug/*.apk }
