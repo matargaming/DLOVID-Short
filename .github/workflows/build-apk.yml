@@ -26,7 +26,9 @@ jobs:
           echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" >>.env
           echo "ADMOB_BANNER_ID=${{ secrets.ADMOB_BANNER_ID }}" >>.env
           echo "ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }}" >>.env
+          echo "ADMOB_REWARDED_ID=${{ secrets.ADMOB_INTER_ID }}" >>.env
           echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" >>.env
+          echo "TMDB_KEY=${{ secrets.TMDB_API_KEY }}" >>.env
           echo "AGORA_APP_ID=${{ secrets.AGORA_APP_ID }}" >>.env
           echo "AGORA_APP_CERTIFICATE=${{ secrets.AGORA_APP_CERTIFICATE }}" >>.env
           echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >>.env
