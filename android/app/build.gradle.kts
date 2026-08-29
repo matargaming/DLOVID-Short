@@ -15,9 +15,7 @@ android {
         versionName = "1.0"
         manifestPlaceholders["ADMOB_APP_ID"] = System.getenv("ADMOB_APP_ID")
     }
-    buildTypes { 
-        release { isMinifyEnabled = false } 
-    }
+    buildTypes { release { isMinifyEnabled = false } }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -32,9 +30,18 @@ dependencies {
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    
     implementation("io.coil-kt:coil-compose:2.6.0")
+    
+    // FIX ExoPlayer - ini yang bikin DramaScreen.kt error di foto lu baris 189-193
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("androidx.media3:media3-ui:1.2.1")
+    
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
