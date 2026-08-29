@@ -1,4 +1,4 @@
-name: Build APK DLOVID Optimized
+name: Build APK DLOVID Gold Final
 on:
   push:
     branches: [ main ]
@@ -15,19 +15,14 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: 'stable'
-      - name: Create Android Project
-        run: |
-          if [ ! -d "android" ]; then
-            flutter create . --platforms=android --project-name dlovid_short
-          fi
       - name: Setup google-services.json
         run: |
           mkdir -p android/app
-          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > /tmp/gservices.txt
-          if base64 -d /tmp/gservices.txt > android/app/google-services.json 2>/dev/null; then
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > /tmp/gs.txt
+          if base64 -d /tmp/gs.txt > android/app/google-services.json 2>/dev/null; then
             echo "base64 OK"
           else
-            cp /tmp/gservices.txt android/app/google-services.json
+            cp /tmp/gs.txt android/app/google-services.json
           fi
       - name: Create env
         run: |
@@ -36,12 +31,22 @@ jobs:
           echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" >> .env
           echo "ADMOB_BANNER_ID=${{ secrets.ADMOB_BANNER_ID }}" >> .env
           echo "ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }}" >> .env
+          echo "MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }}" >> .env
+          echo "MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }}" >> .env
       - name: Get dependencies
         run: flutter pub get
-      - name: Build APK SPLIT (Kecil)
+      - name: Generate Icon Gold dari assets/icon/app_icon.png
+        run: |
+          if [ -f "assets/icon/app_icon.png" ]; then
+            flutter pub run flutter_launcher_icons
+          else
+            echo "app_icon.png tidak ada!"
+            ls assets/icon/
+          fi
+      - name: Build APK SPLIT Kecil
         run: flutter build apk --release --split-per-abi
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: DLOVID-APK-Kecil
+          name: DLOVID-APK-GOLD-FINAL
           path: build/app/outputs/flutter-apk/app-*-release.apk
