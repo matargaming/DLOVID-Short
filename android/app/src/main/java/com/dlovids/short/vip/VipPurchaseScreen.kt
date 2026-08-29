@@ -1,5 +1,6 @@
 package com.dlovids.short.vip
 
+import android.util.Base64
 import android.webkit.WebView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,21 +14,21 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.dlovids.short.core.Secrets
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.util.Base64
-import okhttp3.*
 
 @Composable
 fun VipPurchaseScreen(onVipSuccess: () -> Unit) {
-    val context = LocalContext.current
     val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     var qrUrl by remember { mutableStateOf<String?>(null) }
     var loading by remember { mutableStateOf(false) }
 
     suspend fun createQrisReal(): String? {
-        // REAL: Midtrans QRIS API pakai MIDTRANS_SERVER_KEY secret
         val serverKey = Secrets.MIDTRANS_SERVER_KEY
-        val auth = Base64.getEncoder().encodeToString("$serverKey:".toByteArray())
+        val auth = Base64.encodeToString("$serverKey:".toByteArray(), Base64.NO_WRAP)
 
         val json = JSONObject().apply {
             put("payment_type", "qris")
@@ -45,13 +46,12 @@ fun VipPurchaseScreen(onVipSuccess: () -> Unit) {
             .url("https://api.sandbox.midtrans.com/v2/charge")
             .addHeader("Authorization", "Basic $auth")
             .addHeader("Content-Type", "application/json")
-            .post(RequestBody.create(MediaType.parse("application/json"), json.toString()))
+            .post(json.toString().toRequestBody("application/json".toMediaType()))
             .build()
 
         val res = client.newCall(request).execute()
-        val body = res.body()?.string() ?: return null
+        val body = res.body?.string() ?: return null
         val obj = JSONObject(body)
-        // qr_string atau actions -> qris
         return if (obj.has("actions")) {
             obj.getJSONArray("actions").getJSONObject(0).getString("url")
         } else obj.optString("qr_string")
@@ -67,7 +67,6 @@ fun VipPurchaseScreen(onVipSuccess: () -> Unit) {
             Button(
                 onClick = {
                     loading = true
-                    // Launch IO
                     Thread {
                         try {
                             val url = kotlinx.coroutines.runBlocking { createQrisReal() }
@@ -81,11 +80,9 @@ fun VipPurchaseScreen(onVipSuccess: () -> Unit) {
                 Text(if (loading) "Membuat QRIS REAL..." else "Bayar VIP 30K QRIS")
             }
         } else {
-            // Tampilkan QRIS WebView
             AndroidView(factory = { WebView(it).apply { loadUrl(qrUrl!!) } }, modifier = Modifier.fillMaxSize())
 
             Button(onClick = {
-                // REAL: Setelah bayar, set VIP di Firestore
                 FirebaseFirestore.getInstance().collection("users").document(uid).update("vip", true)
                 onVipSuccess()
             }, modifier = Modifier.fillMaxWidth()) {
