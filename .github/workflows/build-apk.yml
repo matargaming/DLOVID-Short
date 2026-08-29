@@ -1,4 +1,4 @@
-name: Build APK DLOVID Universal
+name: Build APK DLOVID Optimized
 on:
   push:
     branches: [ main ]
@@ -15,42 +15,33 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: 'stable'
-      - name: Create Android Project Universal
-        run: flutter create . --platforms=android --project-name dlovid_short
+      - name: Create Android Project
+        run: |
+          if [ ! -d "android" ]; then
+            flutter create . --platforms=android --project-name dlovid_short
+          fi
       - name: Setup google-services.json
         run: |
           mkdir -p android/app
-          # Coba decode base64, kalau gagal pakai raw json langsung
           echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > /tmp/gservices.txt
           if base64 -d /tmp/gservices.txt > android/app/google-services.json 2>/dev/null; then
-            echo "Decoded base64 OK"
+            echo "base64 OK"
           else
-            echo "Raw JSON detected, copying directly"
             cp /tmp/gservices.txt android/app/google-services.json
           fi
-          cat android/app/google-services.json | head -c 100
       - name: Create env
         run: |
-          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" >> .env
+          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
           echo "AGORA_APP_ID=${{ secrets.AGORA_APP_ID }}" >> .env
           echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" >> .env
           echo "ADMOB_BANNER_ID=${{ secrets.ADMOB_BANNER_ID }}" >> .env
           echo "ADMOB_INTER_ID=${{ secrets.ADMOB_INTER_ID }}" >> .env
-          echo "MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }}" >> .env
-          echo "MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }}" >> .env
       - name: Get dependencies
         run: flutter pub get
-      - name: Generate Launcher Icon
-        run: |
-          if [ -f "assets/logo_apk.png" ]; then
-            flutter pub run flutter_launcher_icons
-          else
-            echo "logo_apk.png belum ada di assets, skip icon"
-          fi
-      - name: Build UNIVERSAL APK for Phone & Tablet
-        run: flutter build apk --release --target-platform android-arm,android-arm64,android-x64
-      - name: Upload UNIVERSAL APK
+      - name: Build APK SPLIT (Kecil)
+        run: flutter build apk --release --split-per-abi
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: DLOVID-Short-UNIVERSAL-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: DLOVID-APK-Kecil
+          path: build/app/outputs/flutter-apk/app-*-release.apk
