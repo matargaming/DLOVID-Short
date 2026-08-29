@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.dlovid.short"
+    namespace = "com.dlovid.shortvideo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.dlovid.short"
+        applicationId = "com.dlovid.shortvideo"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
