@@ -2,15 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- PERMISSION REAL -->
+    <!-- PERMISSION REAL DLOVIDS -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
-    <!-- FIX UNIVERSAL HP + TABLET -->
+    <!-- UNIVERSAL HP + TABLET + FOLDABLE -->
     <supports-screens
         android:smallScreens="true"
         android:normalScreens="true"
@@ -19,28 +20,28 @@
         android:anyDensity="true" />
 
     <application
-        android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="DLOVID Short"
         android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <!-- ADMOB APP ID DARI SECRET -->
+        <!-- ADMOB - REAL dari manifestPlaceholders di build.gradle.kts -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${ADMOB_APP_ID}" />
 
-        <!-- MAIN ACTIVITY UNIVERSAL -->
+        <!-- MAIN ACTIVITY - TIKTOK STYLE FULLSCREEN -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="unspecified"
-            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"
-            android:launchMode="singleTop">
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|keyboard|navigation"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
