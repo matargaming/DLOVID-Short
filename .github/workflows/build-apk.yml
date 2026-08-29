@@ -18,21 +18,15 @@ jobs:
 
       - name: FIX GRADLE - Recreate Android Project
         run: |
-          echo "Fixing unsupported Gradle..."
           rm -rf android
           flutter create . --platforms=android --project-name dlovid_short --org com.matargaming.dlovid --overwrite
-          ls -la android/app/src/main/
 
       - name: Setup Firebase
         run: |
           mkdir -p android/app
           if [ -n "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
             echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > /tmp/gs.txt
-            if base64 -d /tmp/gs.txt > android/app/google-services.json 2>/dev/null; then
-              echo "Firebase OK"
-            else
-              cp /tmp/gs.txt android/app/google-services.json
-            fi
+            base64 -d /tmp/gs.txt > android/app/google-services.json 2>/dev/null || cp /tmp/gs.txt android/app/google-services.json
           fi
 
       - name: Create .env from Secrets Legal
@@ -47,6 +41,16 @@ jobs:
 
       - name: Get Dependencies
         run: flutter pub get
+
+      - name: Generate Icon From Asset
+        run: |
+          ICON=$(find assets -name "*.png" | head -1)
+          echo "Icon: $ICON"
+          echo "flutter_icons:" > flutter_launcher_icons.yaml
+          echo "  android: true" >> flutter_launcher_icons.yaml
+          echo "  ios: true" >> flutter_launcher_icons.yaml
+          echo "  image_path: \"$ICON\"" >> flutter_launcher_icons.yaml
+          flutter pub run flutter_launcher_icons -f flutter_launcher_icons.yaml
 
       - name: Build APK LEGAL - Lebih Bagus Dari TikTok
         run: flutter build apk --release --split-per-abi --no-tree-shake-icons
