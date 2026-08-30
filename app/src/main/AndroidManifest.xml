@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:allowBackup="true"
@@ -17,6 +19,7 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${admobAppId}"/>
 
+        <!-- MENU LOGIN - AWAL -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -27,5 +30,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- MENU DRAMA -->
+        <activity android:name=".DramaActivity" android:exported="false" />
+        
+        <!-- FULLSCREEN VERTIKAL PLAYER -->
+        <activity 
+            android:name=".PlayerActivity" 
+            android:exported="false" 
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation" />
+
+        <!-- NANTI: BERANDA, PLUS, PESAN, AKUN -->
+        <activity android:name=".BerandaActivity" android:exported="false" />
+        <activity android:name=".PlusActivity" android:exported="false" />
+        <activity android:name=".PesanActivity" android:exported="false" />
+        <activity android:name=".AkunActivity" android:exported="false" />
+
     </application>
 </manifest>
