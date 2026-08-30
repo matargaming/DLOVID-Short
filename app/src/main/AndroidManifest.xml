@@ -5,15 +5,24 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+
     <application
-        android:name="com.google.firebase.FirebaseApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="DLOVID-Short"
-        android:theme="@android:style/Theme.NoTitleBar">
-        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="${ADMOB_APP_ID}"/>
-        <activity android:name=".MainActivity" android:exported="true" android:theme="@android:style/Theme.NoTitleBar">
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+        android:usesCleartextTraffic="true">
+        
+        <!-- ADMOB - INI KUNCI BIAR IKLAN MUNCUL -->
+        <meta-data 
+            android:name="com.google.android.gms.ads.APPLICATION_ID" 
+            android:value="${admobAppId}"/>
+
+        <activity 
+            android:name=".MainActivity" 
+            android:exported="true"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
