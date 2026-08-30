@@ -15,16 +15,15 @@ if (localFile.exists()) {
 
 android {
     namespace = "com.dlovid.dlovids"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.dlovid.dlovids"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
-        // SEMUA 14 SECRET - VERSI KOTLIN
         buildConfigField("String", "ADMOB_APP_ID", "\"${localProps.getProperty("ADMOB_APP_ID", "")}\"")
         buildConfigField("String", "ADMOB_BANNER_ID", "\"${localProps.getProperty("ADMOB_BANNER_ID", "")}\"")
         buildConfigField("String", "ADMOB_INTER_ID", "\"${localProps.getProperty("ADMOB_INTER_ID", "")}\"")
@@ -38,6 +37,8 @@ android {
         buildConfigField("String", "ADMIN_KEY_2", "\"${localProps.getProperty("ADMIN_KEY_2", "")}\"")
         buildConfigField("String", "ADMIN_KEY_3", "\"${localProps.getProperty("ADMIN_KEY_3", "")}\"")
         buildConfigField("String", "FIREBASE_PROJECT_ID", "\"${localProps.getProperty("FIREBASE_PROJECT_ID", "")}\"")
+        
+        manifestPlaceholders["admobAppId"] = localProps.getProperty("ADMOB_APP_ID", "")
     }
 
     buildFeatures {
@@ -49,9 +50,14 @@ android {
             isMinifyEnabled = false
         }
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
 
 dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.android.gms:play-services-ads:22.5.0")
