@@ -17,7 +17,7 @@
         android:label="DLOVID-Short"
         android:supportsRtl="true"
         android:theme="@style/Theme.DLOVID"
-        tools:replace="android:allowBackup">
+        tools:replace="android:allowBackup,android:label,android:icon,android:theme">
         
         <activity
             android:name=".MainActivity"
