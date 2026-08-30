@@ -17,9 +17,41 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.7
-      - name: Create google-services.json dummy
+      - name: Create google-services.json dummy LENGKAP
         run: |
-          echo '{"project_info":{"project_id":"${{ secrets.FIREBASE_PROJECT_ID }}"},"client":[{"client_info":{"mobilesdk_app_id":"1:123:android:abc","android_client_info":{"package_name":"com.dlovid.dlovids"}},"api_key":[{"current_key":"dummy"}]}]}' > app/google-services.json
+          cat > app/google-services.json << 'EOF'
+          {
+            "project_info": {
+              "project_number": "123456789012",
+              "project_id": "dlovid-short",
+              "firebase_url": "https://dlovid-short-default-rtdb.firebaseio.com",
+              "storage_bucket": "dlovid-short.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:123456789012:android:abcdef123456",
+                  "android_client_info": {
+                    "package_name": "com.dlovid.dlovids"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  {
+                    "current_key": "AIzaSyDummyKeyDummyKeyDummyKey123"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": []
+                  }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+          cat app/google-services.json
       - name: Create local.properties
         run: |
           echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" >> local.properties
