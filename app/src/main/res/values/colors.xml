@@ -5,4 +5,5 @@
     <color name="dlovids_blue">#FF0A84FF</color>
     <color name="dlovids_purple">#FF8A2BE2</color>
     <color name="background_dark">#FF0A0A0A</color>
+    <color name="ic_launcher_background">#FF0A0A0A</color>
 </resources>
