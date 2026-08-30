@@ -14,12 +14,31 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        // BACA SEMUA SECRET DARI GITHUB
         val admobAppId = System.getenv("ADMOB_APP_ID") ?: ""
         val admobBannerId = System.getenv("ADMOB_BANNER_ID") ?: ""
         val admobInterId = System.getenv("ADMOB_INTER_ID") ?: ""
+        val adminEmail = System.getenv("ADMIN_EMAIL") ?: ""
+        val adminKey1 = System.getenv("ADMIN_KEY_1") ?: ""
+        val adminKey2 = System.getenv("ADMIN_KEY_2") ?: ""
+        val adminKey3 = System.getenv("ADMIN_KEY_3") ?: ""
+        val tmdbKey = System.getenv("TMDB_API_KEY") ?: ""
+        val midtransClient = System.getenv("MIDTRANS_CLIENT_KEY") ?: ""
+        val midtransServer = System.getenv("MIDTRANS_SERVER_KEY") ?: ""
+        val agoraAppId = System.getenv("AGORA_APP_ID") ?: ""
+
         manifestPlaceholders["ADMOB_APP_ID"] = admobAppId
-        manifestPlaceholders["ADMOB_BANNER_ID"] = admobBannerId
-        manifestPlaceholders["ADMOB_INTER_ID"] = admobInterId
+        
+        // BuildConfig biar bisa dibaca di Kotlin
+        buildConfigField("String", "ADMIN_EMAIL", "\"$adminEmail\"")
+        buildConfigField("String", "ADMIN_KEY_1", "\"$adminKey1\"")
+        buildConfigField("String", "ADMIN_KEY_2", "\"$adminKey2\"")
+        buildConfigField("String", "ADMIN_KEY_3", "\"$adminKey3\"")
+        buildConfigField("String", "TMDB_API_KEY", "\"$tmdbKey\"")
+        buildConfigField("String", "MIDTRANS_CLIENT_KEY", "\"$midtransClient\"")
+        buildConfigField("String", "AGORA_APP_ID", "\"$agoraAppId\"")
+        buildConfigField("String", "ADMOB_BANNER_ID", "\"$admobBannerId\"")
+        buildConfigField("String", "ADMOB_INTER_ID", "\"$admobInterId\"")
     }
     buildTypes {
         release {
@@ -36,9 +55,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 }
 
