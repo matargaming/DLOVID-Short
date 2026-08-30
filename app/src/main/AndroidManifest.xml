@@ -9,9 +9,10 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@android:drawable/sym_def_app_icon"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
         android:label="DLOVID-Short"
-        android:theme="@android:style/Theme.NoTitleBar"
+        android:theme="@style/Theme.DLOVID"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
         
@@ -19,29 +20,29 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${admobAppId}"/>
 
-        <!-- MENU LOGIN - AWAL -->
+        <!-- MENU LOGIN - LOGO DLOVID GOLD -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:theme="@style/Theme.DLOVID">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- MENU DRAMA -->
+        <!-- MENU DRAMA - 13 KATEGORI -->
         <activity android:name=".DramaActivity" android:exported="false" />
         
-        <!-- FULLSCREEN VERTIKAL PLAYER -->
+        <!-- FULLSCREEN VERTIKAL PLAYER - TULISAN GOLD -->
         <activity 
             android:name=".PlayerActivity" 
             android:exported="false" 
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation" />
 
-        <!-- NANTI: BERANDA, PLUS, PESAN, AKUN -->
+        <!-- BERANDA TIKTOK STYLE -->
         <activity android:name=".BerandaActivity" android:exported="false" />
         <activity android:name=".PlusActivity" android:exported="false" />
         <activity android:name=".PesanActivity" android:exported="false" />
