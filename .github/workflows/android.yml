@@ -23,6 +23,15 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Fix missing gradle-wrapper.jar
+        run: |
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "gradle-wrapper.jar hilang, download..."
+            mkdir -p gradle/wrapper
+            curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.7.0/gradle/wrapper/gradle-wrapper.jar
+          fi
+          ls -lh gradle/wrapper/
+
       - name: Create local.properties from Secrets
         run: |
           echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" >> local.properties
