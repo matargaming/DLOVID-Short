@@ -1,15 +1,24 @@
-package com.dlovid.dlovids.data.tmdb
+package com.dlovid.dlovids.data
 
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Query
 
-object TmdbClient {
-    private const val BASE_URL = "https://api.themoviedb.org/3/"
-    val api: TmdbApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(TmdbApiService::class.java)
-    }
+data class TmdbMovie(
+    val id: Int,
+    val title: String = "",
+    val name: String = "",
+    val overview: String = "",
+    val poster_path: String? = null
+)
+
+data class TmdbResponse(
+    val results: List<TmdbMovie>
+)
+
+interface TmdbApi {
+    @GET("trending/all/day")
+    suspend fun getTrending(@Query("api_key") apiKey: String): TmdbResponse
+
+    @GET("movie/popular")
+    suspend fun getPopular(@Query("api_key") apiKey: String): TmdbResponse
 }
