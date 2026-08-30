@@ -16,13 +16,10 @@ jobs:
       - name: Decode Firebase
         run: |
           echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > app/google-services.json || echo "no json"
-          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" >> gradle.properties
-          echo "AGORA_APP_ID=${{ secrets.AGORA_APP_ID }}" >> gradle.properties
-          echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" >> gradle.properties
-      - name: Build Debug with Full Log
-        run:./gradlew assembleDebug --stacktrace --info
-      - uses: actions/upload-artifact@v4
-        if: always()
+      - name: Build Debug
+        run:./gradlew assembleDebug --stacktrace
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: DLOVID-APK
           path: app/build/outputs/apk/debug/*.apk
