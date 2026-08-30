@@ -99,7 +99,6 @@ class MainActivity : AppCompatActivity() {
             val sandi = etSandi.text.toString()
             val confirm = etConfirm.text.toString()
 
-            // 6. Login kalau tidak sesuai no hp/email, sandi tidak sesuai akan di tolak apk
             if (email.isEmpty() || sandi.isEmpty()) {
                 status.text = "❌ Email/HP & Sandi wajib isi!"
                 return@setOnClickListener
@@ -113,14 +112,12 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             status.text = "✅ Login pengguna berhasil! Masuk ke MENU DRAMA..."
-            // Nanti di sini pindah ke Menu Drama
+            startActivity(android.content.Intent(this@MainActivity, DramaActivity::class.java))
         }
 
         btnAdmin.setOnClickListener {
             val email = etEmail.text.toString()
             val sandi = etSandi.text.toString()
-            // 1. Admin masuk dengan gmail Gmail Ada di secret ADMIN_EMAIL
-            // 2. Sandi pertama ada di secret ADMIN_KEY_1
             if (email != ADMIN_EMAIL) {
                 status.text = "❌ Bukan Gmail admin! Harus: $ADMIN_EMAIL"
                 return@setOnClickListener
@@ -134,7 +131,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnMasukAdmin.setOnClickListener {
-            // 3. Masuk ke panel admin ada permintaan 2 sandi lagi
             if (etKey2.text.toString() != KEY2) {
                 status.text = "❌ ADMIN_KEY_2 salah!"
                 return@setOnClickListener
@@ -143,7 +139,7 @@ class MainActivity : AppCompatActivity() {
                 status.text = "❌ ADMIN_KEY_3 salah!"
                 return@setOnClickListener
             }
-            status.text = "🎉 ADMIN LOGIN SUKSES! Masuk ke Panel Admin (Kotak live iklan, daftar trending TMDB, menu saran live/block)"
+            status.text = "🎉 ADMIN LOGIN SUKSES! Panel: Kotak live iklan, trending TMDB, saran live/block"
         }
 
         root.addView(logo)
