@@ -33,20 +33,20 @@
         </activity>
 
         <!-- MENU DRAMA - 13 KATEGORI -->
-        <activity android:name=".DramaActivity" android:exported="false" />
+        <activity android:name=".DramaActivity" android:exported="false" android:theme="@style/Theme.DLOVID" />
         
-        <!-- FULLSCREEN VERTIKAL PLAYER - TULISAN GOLD -->
+        <!-- FULLSCREEN VERTIKAL PLAYER - TULISAN GOLD - FIX APPCOMPAT -->
         <activity 
             android:name=".PlayerActivity" 
             android:exported="false" 
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:theme="@style/Theme.DLOVID.Fullscreen"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation" />
 
         <!-- BERANDA TIKTOK STYLE -->
-        <activity android:name=".BerandaActivity" android:exported="false" />
-        <activity android:name=".PlusActivity" android:exported="false" />
-        <activity android:name=".PesanActivity" android:exported="false" />
-        <activity android:name=".AkunActivity" android:exported="false" />
+        <activity android:name=".BerandaActivity" android:exported="false" android:theme="@style/Theme.DLOVID" />
+        <activity android:name=".PlusActivity" android:exported="false" android:theme="@style/Theme.DLOVID" />
+        <activity android:name=".PesanActivity" android:exported="false" android:theme="@style/Theme.DLOVID" />
+        <activity android:name=".AkunActivity" android:exported="false" android:theme="@style/Theme.DLOVID" />
 
     </application>
 </manifest>
