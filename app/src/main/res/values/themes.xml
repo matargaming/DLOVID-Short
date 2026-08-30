@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.DLOVID" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/dlovid_gold</item>
+        <item name="android:colorPrimaryDark">@color/dlovid_black</item>
+        <item name="android:textColorPrimary">@color/dlovid_black</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+</resources>
