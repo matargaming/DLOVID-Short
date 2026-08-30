@@ -17,7 +17,7 @@ jobs:
         env:
           JSON_CONTENT: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
-          echo "$JSON_CONTENT" > android/app/google-services.json
+          echo "$JSON_CONTENT" > app/google-services.json
 
       - name: Setup Gradle 8.5
         uses: gradle/actions/setup-gradle@v3
@@ -40,7 +40,6 @@ jobs:
           MIDTRANS_SERVER_KEY: ${{ secrets.MIDTRANS_SERVER_KEY }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
         run: |
-          cd android
           rm -rf gradle/wrapper/gradle-wrapper.jar
           gradle wrapper --gradle-version 8.5
           chmod +x gradlew
@@ -50,4 +49,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: DLOVID-APK
-          path: android/app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
