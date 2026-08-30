@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- THEME UTAMA - WAJIB APPCOMPAT BIAR GAK CRASH -->
     <style name="Theme.DLOVID" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <item name="colorPrimary">#000000</item>
         <item name="colorPrimaryDark">#000000</item>
         <item name="colorAccent">#FFD700</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:windowBackground">#000000</item>
+    </style>
+
+    <!-- THEME FULLSCREEN PLAYER - FIX APPCOMPAT -->
+    <style name="Theme.DLOVID.Fullscreen" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="colorPrimary">#000000</item>
+        <item name="colorAccent">#FFD700</item>
+        <item name="android:windowBackground">#000000</item>
     </style>
 </resources>
