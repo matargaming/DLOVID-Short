@@ -3,31 +3,24 @@ package com.dlovid.dlovids
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import com.dlovid.dlovids.ui.navigation.DlovidsNavHost
+import com.dlovid.dlovids.ui.theme.DLOVIDShortTheme
+import com.google.firebase.FirebaseApp
 
-// ... MainActivity di atasnya biarin ...
-
-@Composable
-fun LoginScreen(onLoginUser: (String,String,String)->Unit, onLoginAdmin: (String,String,String,String)->Unit) {
-    Column(
-        Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo_dlovids), 
-            contentDescription = "DLOVIDS",
-            modifier = Modifier.size(180.dp)
-        )
-        Spacer(Modifier.height(24.dp))
-        // field Email/HP, Sandi + intip, Confirm + intip, OTP di sini
-        Text("Login dengan logo DLOVIDS")
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        try { FirebaseApp.initializeApp(this) } catch(_: Exception) {}
+        setContent {
+            DLOVIDShortTheme {
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    DlovidsNavHost()
+                }
+            }
+        }
     }
 }
