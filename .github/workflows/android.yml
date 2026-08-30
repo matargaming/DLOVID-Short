@@ -1,52 +1,28 @@
-name: Build APK
-on: push
-
+name: Build DLOVID
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
-
-      - name: Create google-services.json
-        env:
-          JSON_CONTENT: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: |
-          echo "$JSON_CONTENT" > app/google-services.json
-
-      - name: Setup Gradle 8.5
+          java-version: '17'
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: 8.5
-
-      - name: Fix & Build APK REAL
-        env:
-          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-          ADMIN_KEY_1: ${{ secrets.ADMIN_KEY_1 }}
-          ADMIN_KEY_2: ${{ secrets.ADMIN_KEY_2 }}
-          ADMIN_KEY_3: ${{ secrets.ADMIN_KEY_3 }}
-          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
-          ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
-          ADMOB_BANNER_ID: ${{ secrets.ADMOB_BANNER_ID }}
-          ADMOB_INTER_ID: ${{ secrets.ADMOB_INTER_ID }}
-          AGORA_APP_ID: ${{ secrets.AGORA_APP_ID }}
-          AGORA_APP_CERTIFICATE: ${{ secrets.AGORA_APP_CERTIFICATE }}
-          MIDTRANS_CLIENT_KEY: ${{ secrets.MIDTRANS_CLIENT_KEY }}
-          MIDTRANS_SERVER_KEY: ${{ secrets.MIDTRANS_SERVER_KEY }}
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          gradle-version: 8.4
+      - name: Decode Firebase
         run: |
-          rm -rf gradle/wrapper/gradle-wrapper.jar
-          gradle wrapper --gradle-version 8.5
-          chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > app/google-services.json || echo "no json"
+          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" >> gradle.properties
+          echo "AGORA_APP_ID=${{ secrets.AGORA_APP_ID }}" >> gradle.properties
+          echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" >> gradle.properties
+      - name: Build Debug with Full Log
+        run:./gradlew assembleDebug --stacktrace --info
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: DLOVID-APK
           path: app/build/outputs/apk/debug/*.apk
